@@ -6,6 +6,9 @@ import Footer from "./components/Footer";
 import Login from './components/Login';
 import Register from './components/Register';
 import Admin from './components/Admin';
+import AllRooms from "./pages/AllRooms";
+import RoomDetails from "./pages/RoomDetails";
+
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -23,6 +26,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin/>} />
+           <Route path="/rooms" element={<AllRooms />} />
+            <Route path="/rooms/:id" element={<RoomDetails />} />
         </Routes>
       </div>
       <Footer />
