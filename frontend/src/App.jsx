@@ -6,6 +6,8 @@ import Footer from "./components/Footer";
 import Login from './components/Login';
 import Register from './components/Register';
 import Admin from './components/Admin';
+import MyBookings from "./pages/MyBookings";
+import HotelReg from "./components/HotelReg";
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -19,10 +21,12 @@ const App = () => {
           onLoginClick={() => setShowLogin(true)}
         />
       )}
+      {false && <HotelReg/>}
       <div className="min-h-[70vh]">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin/>} />
+           <Route path="/my-bookings" element={<MyBookings/>} />
         </Routes>
       </div>
       <Footer />
