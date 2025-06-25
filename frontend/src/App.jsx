@@ -6,6 +6,17 @@ import Footer from "./components/Footer";
 import Login from './components/Login';
 import Register from './components/Register';
 import Admin from './components/Admin';
+// <<<<<<< HEAD
+// import MyBookings from "./pages/MyBookings";
+// import HotelReg from "./components/HotelReg";
+// =======
+// import AllRooms from "./pages/AllRooms";
+// import RoomDetails from "./pages/RoomDetails";
+
+// >>>>>>> 8805a3823936144ccbf351f8ce421db6ded237d3
+
+import MyBookings from "./pages/MyBookings";
+import HotelReg from "./components/HotelReg";
 import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
 
@@ -22,13 +33,26 @@ const App = () => {
           onLoginClick={() => setShowLogin(true)}
         />
       )}
+      {false && <HotelReg/>}
       <div className="min-h-[70vh]">
-        <Routes>
+        {/* <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin/>} />
+<<<<<<< HEAD
+           <Route path="/my-bookings" element={<MyBookings/>} />
+=======
            <Route path="/rooms" element={<AllRooms />} />
             <Route path="/rooms/:id" element={<RoomDetails />} />
-        </Routes>
+>>>>>>> 8805a3823936144ccbf351f8ce421db6ded237d3
+        </Routes> */}
+      <Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/admin" element={<Admin />} />
+  <Route path="/my-bookings" element={<MyBookings />} />
+  <Route path="/rooms" element={<AllRooms />} />
+  <Route path="/rooms/:id" element={<RoomDetails />} />
+</Routes>
+
       </div>
       <Footer />
 
