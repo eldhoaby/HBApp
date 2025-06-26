@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { FaUser, FaUserShield } from "react-icons/fa";
@@ -8,7 +8,10 @@ const NavBar = ({ onLoginClick }) => {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
 
-  const hideLogin = location.pathname === "/rooms" || location.pathname.startsWith("/admin");
+  const hideLogin =
+    location.pathname === "/rooms" || 
+    location.pathname === "/my-bookings" ||
+    location.pathname.startsWith("/admin");
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -17,8 +20,11 @@ const NavBar = ({ onLoginClick }) => {
     { name: "About", path: "/" },
   ];
 
-  const [isScrolled, setIsScrolled] = React.useState(false);
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("role");
@@ -26,17 +32,30 @@ const NavBar = ({ onLoginClick }) => {
     navigate("/");
   };
 
-  // ✅ Update scroll logic to always show solid navbar on /rooms and /admin
-  React.useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       const isAlwaysSolid =
-        location.pathname === "/rooms" || location.pathname.startsWith("/admin");
+        location.pathname === "/rooms" ||
+        location.pathname === "/my-bookings" ||
+        location.pathname.startsWith("/admin");
+
       setIsScrolled(window.scrollY > 10 || isAlwaysSolid);
     };
 
-    handleScroll(); // Run once on initial load
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowUserDropdown(false);
+      }
+    };
+
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [location.pathname]);
 
   return (
@@ -84,14 +103,40 @@ const NavBar = ({ onLoginClick }) => {
       </div>
 
       {/* Desktop Right */}
-      <div className="hidden md:flex items-center gap-4">
+      <div className="hidden md:flex items-center gap-4 relative">
         <img
           src={assets.searchIcon}
           alt="search"
           className={`${isScrolled && "invert"} h-7 transition-all duration-500`}
         />
 
-        {role === "user" && <FaUser title="User" className="text-xl" />}
+        {role === "user" && (
+          <div ref={dropdownRef} className="relative">
+            <FaUser
+              title="User"
+              className="text-xl cursor-pointer"
+              onClick={() => setShowUserDropdown(!showUserDropdown)}
+            />
+            {showUserDropdown && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
+                <Link
+                  to="/my-bookings"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                  onClick={() => setShowUserDropdown(false)}
+                >
+                  My Bookings
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {role === "admin" && <FaUserShield title="Admin" className="text-xl" />}
 
         {!hideLogin && !role && (
@@ -100,14 +145,6 @@ const NavBar = ({ onLoginClick }) => {
             className="bg-black text-white px-8 py-2.5 rounded-full ml-4 transition-all duration-500"
           >
             Login
-          </button>
-        )}
-        {role && (
-          <button
-            onClick={handleLogout}
-            className="text-sm text-red-600 ml-4 border border-red-600 px-4 py-1 rounded-full hover:bg-red-600 hover:text-white transition"
-          >
-            Logout
           </button>
         )}
       </div>
@@ -145,7 +182,19 @@ const NavBar = ({ onLoginClick }) => {
           Dashboard
         </button>
 
-        {role === "user" && <FaUser title="User" className="text-2xl" />}
+        {role === "user" && (
+          <>
+            <FaUser title="User" className="text-2xl" />
+            <Link
+              to="/my-bookings"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-blue-600"
+            >
+              My Bookings
+            </Link>
+          </>
+        )}
+
         {role === "admin" && <FaUserShield title="Admin" className="text-2xl" />}
 
         {!hideLogin && !role && (

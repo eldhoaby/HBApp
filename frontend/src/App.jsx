@@ -1,59 +1,45 @@
 import React, { useState } from "react";
-import NavBar from "./components/Navbar";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Home from "./pages/Home";
+
+// Components & Pages
+import NavBar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Login from './components/Login';
-import Register from './components/Register';
-import Admin from './components/Admin';
-// <<<<<<< HEAD
-// import MyBookings from "./pages/MyBookings";
-// import HotelReg from "./components/HotelReg";
-// =======
-// import AllRooms from "./pages/AllRooms";
-// import RoomDetails from "./pages/RoomDetails";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Admin from "./components/Admin";
+import HotelReg from "./components/HotelReg"; // You can remove if unused
 
-// >>>>>>> 8805a3823936144ccbf351f8ce421db6ded237d3
-
+// Pages
+import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
-import HotelReg from "./components/HotelReg";
 import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
 
-
 const App = () => {
-  const isOwnerPath = useLocation().pathname.includes("owner");
+  const location = useLocation();
+  const isOwnerPath = location.pathname.includes("owner");
+
   const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false); // ✅ Add register modal state
+  const [showRegister, setShowRegister] = useState(false);
 
   return (
     <div>
+      {/* NavBar is hidden on owner pages */}
       {!isOwnerPath && (
-        <NavBar
-          onLoginClick={() => setShowLogin(true)}
-        />
+        <NavBar onLoginClick={() => setShowLogin(true)} />
       )}
-      {false && <HotelReg/>}
-      <div className="min-h-[70vh]">
-        {/* <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Admin/>} />
-<<<<<<< HEAD
-           <Route path="/my-bookings" element={<MyBookings/>} />
-=======
-           <Route path="/rooms" element={<AllRooms />} />
-            <Route path="/rooms/:id" element={<RoomDetails />} />
->>>>>>> 8805a3823936144ccbf351f8ce421db6ded237d3
-        </Routes> */}
-      <Routes>
-  <Route path="/" element={<Home />} />
-  <Route path="/admin" element={<Admin />} />
-  <Route path="/my-bookings" element={<MyBookings />} />
-  <Route path="/rooms" element={<AllRooms />} />
-  <Route path="/rooms/:id" element={<RoomDetails />} />
-</Routes>
 
+      <div className="min-h-[70vh]">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/rooms" element={<AllRooms />} />
+          <Route path="/rooms/:id" element={<RoomDetails />} />
+        </Routes>
       </div>
+
+      {/* Footer visible on all pages */}
       <Footer />
 
       {/* Login Modal */}
