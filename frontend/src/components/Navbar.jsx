@@ -9,7 +9,7 @@ const NavBar = ({ onLoginClick }) => {
   const role = localStorage.getItem("role");
 
   const hideLogin =
-    location.pathname === "/rooms" || 
+    location.pathname === "/rooms" ||
     location.pathname === "/my-bookings" ||
     location.pathname.startsWith("/admin");
 
@@ -32,31 +32,34 @@ const NavBar = ({ onLoginClick }) => {
     navigate("/");
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const isAlwaysSolid =
-        location.pathname === "/rooms" ||
-        location.pathname === "/my-bookings" ||
-        location.pathname.startsWith("/admin");
+ useEffect(() => {
+  const handleScroll = () => {
+    const isAlwaysSolid =
+      location.pathname.startsWith("/rooms") ||
+      location.pathname === "/my-bookings" ||
+      location.pathname.startsWith("/admin") ||
+      location.pathname === "/payment" ||
+      location.pathname === "/confirmation";
 
-      setIsScrolled(window.scrollY > 10 || isAlwaysSolid);
-    };
+    setIsScrolled(window.scrollY > 10 || isAlwaysSolid);
+  };
 
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowUserDropdown(false);
-      }
-    };
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowUserDropdown(false);
+    }
+  };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    document.addEventListener("mousedown", handleClickOutside);
+  handleScroll();
+  window.addEventListener("scroll", handleScroll);
+  document.addEventListener("mousedown", handleClickOutside);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [location.pathname]);
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [location.pathname]);
+
 
   return (
     <nav
@@ -66,7 +69,6 @@ const NavBar = ({ onLoginClick }) => {
           : "py-4 md:py-6"
       }`}
     >
-      {/* Logo */}
       <Link to="/">
         <img
           src={assets.logo}
@@ -75,7 +77,6 @@ const NavBar = ({ onLoginClick }) => {
         />
       </Link>
 
-      {/* Desktop Nav */}
       <div className="hidden md:flex items-center gap-4 lg:gap-8">
         {navLinks.map((link, i) => (
           <a
@@ -102,7 +103,6 @@ const NavBar = ({ onLoginClick }) => {
         </button>
       </div>
 
-      {/* Desktop Right */}
       <div className="hidden md:flex items-center gap-4 relative">
         <img
           src={assets.searchIcon}
