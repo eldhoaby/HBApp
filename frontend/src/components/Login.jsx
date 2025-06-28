@@ -1,4 +1,3 @@
-// src/components/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -37,28 +36,31 @@ const Login = ({ onClose, onSwitch }) => {
     }
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!validate()) return;
 
-    axios.post('http://localhost:3000/login', { email, password })
-      .then((res) => {
-        const { role, message } = res.data;
-        alert(message);
+    try {
+      const res = await axios.post('http://localhost:3000/login', { email, password });
+      const { role, message, ...userData } = res.data;
 
-        localStorage.setItem('role', role); // ✅ store role
-        localStorage.setItem('user', JSON.stringify(res.data));
+      alert(message);
 
-        if (role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/rooms');
-        }
+      // ✅ Save to localStorage
+      localStorage.setItem('role', role);
+      localStorage.setItem('user', JSON.stringify(userData));
 
-        onClose(); // Close modal
-      })
-      .catch((err) => {
-        alert(err.response?.data?.message || 'Login failed');
-      });
+      // ✅ Redirect based on role
+      if (role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/rooms');
+      }
+
+      onClose(); // close modal
+
+    } catch (err) {
+      alert(err.response?.data?.message || 'Login failed');
+    }
   };
 
   return (
@@ -80,7 +82,9 @@ const Login = ({ onClose, onSwitch }) => {
         </div>
 
         {/* Email */}
-        <label className="block text-sm font-medium mb-1">Email <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium mb-1">
+          Email <span className="text-red-500">*</span>
+        </label>
         <input
           type="email"
           placeholder="Enter your email"
@@ -92,7 +96,9 @@ const Login = ({ onClose, onSwitch }) => {
         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
 
         {/* Password */}
-        <label className="block text-sm font-medium mt-4 mb-1">Password <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium mt-4 mb-1">
+          Password <span className="text-red-500">*</span>
+        </label>
         <input
           type="password"
           placeholder="Enter your password"
@@ -102,7 +108,7 @@ const Login = ({ onClose, onSwitch }) => {
         />
         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
 
-        {/* Submit */}
+        {/* Login Button */}
         <button
           onClick={handleLogin}
           className="bg-black text-white w-full py-2 rounded mt-5"
@@ -111,7 +117,8 @@ const Login = ({ onClose, onSwitch }) => {
         </button>
 
         <p className="text-xs text-center mt-3">
-          Don’t have an account? <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>Sign up</span>
+          Don’t have an account?{' '}
+          <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>Sign up</span>
         </p>
       </div>
     </div>

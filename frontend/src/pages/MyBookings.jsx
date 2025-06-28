@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
-import Title from '../components/Title'
-import { assets, userBookingsDummyData } from '../assets/assets'
+import React, { useState } from 'react';
+import Title from '../components/Title';
+import { assets, userBookingsDummyData } from '../assets/assets';
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState(userBookingsDummyData)
+  const [bookings, setBookings] = useState(userBookingsDummyData);
 
   return (
     <div className='py-28 md:pb-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32'>
       <Title
         title='My Bookings'
-        subTitle='Easily manage your past, current and upcoming hotel reservations in one place. Plan your trips seamlessly with just a few clicks'
+        subTitle='Easily manage your past, current and upcoming hotel reservations in one place. Plan your trips seamlessly with just a few clicks.'
         align='left'
       />
       <div className='max-w-6xl mt-8 w-full text-gray-800'>
@@ -47,7 +47,9 @@ const MyBookings = () => {
                   <img src={assets.guestsIcon} alt='guests-icon' />
                   <span>Guests: {booking.guests}</span>
                 </div>
-                <p className='text-base'>Total: ${booking.totalPrice}</p>
+                <p className='text-base font-medium'>
+                  Total: ₹{booking.totalPrice}
+                </p>
               </div>
             </div>
 
@@ -93,7 +95,7 @@ const MyBookings = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MyBookings
+export default MyBookings;

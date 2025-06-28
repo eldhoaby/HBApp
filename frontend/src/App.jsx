@@ -1,19 +1,21 @@
+// src/App.jsx
 import React, { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
-// Components & Pages
 import NavBar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Admin from "./components/Admin";
-import HotelReg from "./components/HotelReg"; // You can remove if unused
 
 // Pages
 import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
 import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
+import Payment from "./pages/Payment"; // ✅ FIXED: Correct import
+import Confirmation from "./pages/Confirmation";
+
 
 const App = () => {
   const location = useLocation();
@@ -24,7 +26,6 @@ const App = () => {
 
   return (
     <div>
-      {/* NavBar is hidden on owner pages */}
       {!isOwnerPath && (
         <NavBar onLoginClick={() => setShowLogin(true)} />
       )}
@@ -36,13 +37,14 @@ const App = () => {
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/rooms" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/confirmation" element={<Confirmation />} />
+
         </Routes>
       </div>
 
-      {/* Footer visible on all pages */}
       <Footer />
 
-      {/* Login Modal */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
@@ -53,7 +55,6 @@ const App = () => {
         />
       )}
 
-      {/* Register Modal */}
       {showRegister && (
         <Register
           onClose={() => setShowRegister(false)}
