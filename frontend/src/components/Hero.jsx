@@ -8,11 +8,10 @@ const Hero = () => {
         The Ultimate Hotel Experience
       </p>
       <h1 className="font-playfair text-2x1 md:text-5x1 md:text-[56px] md:leading-[56px] font-bold md:font-extrabold max-w-x1 mt-4">
-        Discover Your Perfect Gateway Destination
+        Step into the journey of your dreams
       </h1>
       <p className="max-w-130 mt-2 text-sm md:text-base">
-        Unparalleled luxury and comfort await at the world's most exclusive
-        hotels and resorts. Start your journey today.
+        Experience true luxury and comfort at the world’s finest hotels. Begin your journey today.
       </p>
       <form className='bg-white text-gray-500 rounded-lg px-6 py-4 mt-8 flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto'>
 

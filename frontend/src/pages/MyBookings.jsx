@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+// 
+import React, { useState, useEffect } from 'react';
 import Title from '../components/Title';
 import { assets, userBookingsDummyData } from '../assets/assets';
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState(userBookingsDummyData);
+  const [bookings, setBookings] = useState([]);
+
+  useEffect(() => {
+    const currentUserId = localStorage.getItem("userId");
+
+    if (currentUserId) {
+      const userBookings = userBookingsDummyData.filter(
+        (booking) => booking.userId === currentUserId
+      );
+      setBookings(userBookings);
+    }
+  }, []);
 
   return (
     <div className='py-28 md:pb-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32'>
@@ -24,7 +36,7 @@ const MyBookings = () => {
             key={booking._id}
             className='grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t'
           >
-            {/* ----Hotel Details----- */}
+            {/* Hotel Details */}
             <div className='flex flex-col md:flex-row'>
               <img
                 src={booking.room.images[0]}
@@ -53,7 +65,7 @@ const MyBookings = () => {
               </div>
             </div>
 
-            {/* ----Date & Timings--- */}
+            {/* Date & Timings */}
             <div className='flex flex-row md:items-center md:gap-12 mt-3 gap-8'>
               <div>
                 <p>Check-In:</p>
@@ -69,7 +81,7 @@ const MyBookings = () => {
               </div>
             </div>
 
-            {/* ---Payment Status */}
+            {/* Payment Status */}
             <div className='flex flex-col items-start justify-center pt-3'>
               <div className='flex items-center gap-2'>
                 <div
