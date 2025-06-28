@@ -196,7 +196,9 @@ const RoomDetails = () => {
             ))}
           </div>
         </div>
-        <p className='text-2xl font-medium text-gray-800'>${room.price}/night</p>
+        <p className='text-2xl font-medium text-gray-800'>
+          {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(room.price)} /night
+        </p>
       </div>
 
       <div className='bg-white shadow-md p-6 rounded-xl mt-12 max-w-6xl'>
