@@ -32,6 +32,7 @@ const amenityIcons = {
 const RoomDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [room, setRoom] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [error, setError] = useState("");
@@ -105,9 +106,10 @@ const RoomDetails = () => {
 
   const handleAddToBookings = async () => {
     const userData = localStorage.getItem("user");
+
     if (!userData) {
-      navigate("/login");
-      return;
+      console.warn("🚫 No user found in localStorage");
+      return navigate("/login");
     }
 
     if (!checkIn || !checkOut) {
@@ -121,35 +123,50 @@ const RoomDetails = () => {
     }
 
     const user = JSON.parse(userData);
+    console.log("✅ User from localStorage:", user);
+
+    if (!user || !user._id) {
+      console.warn("🚫 Invalid user or missing _id");
+      return navigate("/login");
+    }
+
     const nights = calculateNights(checkIn, checkOut);
     const totalPrice = room.price * nights;
+
+    const bookingData = {
+      userId: user._id,
+      hotel: {
+        name: room.name,
+        address: room.address,
+      },
+      room: {
+        roomType: room.roomType,
+        images: room.images,
+        name: room.name,
+        address: room.address,
+        amenities: room.amenities,
+        price: room.price,
+      },
+      checkInDate: checkIn,
+      checkOutDate: checkOut,
+      guests,
+      totalPrice,
+      isPaid: true,
+    };
+
+    console.log("🧾 Sending booking data:", bookingData);
 
     try {
       const res = await fetch("http://localhost:3000/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user._id,
-          hotel: {
-            name: room.name,
-            address: room.address
-          },
-          room: {
-            roomType: room.roomType,
-            images: room.images
-          },
-          checkInDate: checkIn,
-          checkOutDate: checkOut,
-          guests,
-          totalPrice,
-          isPaid: false
-        })
+        body: JSON.stringify(bookingData),
       });
 
       if (!res.ok) throw new Error("Booking failed");
       navigate("/my-bookings");
     } catch (err) {
-      console.error(err);
+      console.error("Booking Error:", err);
       setMessage("❌ Failed to add to bookings.");
     }
   };
@@ -160,8 +177,8 @@ const RoomDetails = () => {
         room,
         checkIn,
         checkOut,
-        guests
-      }
+        guests,
+      },
     });
   };
 

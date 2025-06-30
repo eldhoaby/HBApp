@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -41,13 +43,13 @@ const Login = ({ onClose, onSwitch }) => {
 
     try {
       const res = await axios.post('http://localhost:3000/login', { email, password });
-      const { role, message, ...userData } = res.data;
+      const { role, message, name, ...userData } = res.data;
 
       alert(message);
 
-      // ✅ Save to localStorage
+      // ✅ Save to localStorage for NavBar
       localStorage.setItem('role', role);
-      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('user', JSON.stringify({ name, ...userData }));
 
       // ✅ Redirect based on role
       if (role === 'admin') {
@@ -56,7 +58,7 @@ const Login = ({ onClose, onSwitch }) => {
         navigate('/rooms');
       }
 
-      onClose(); // close modal
+      onClose(); // close login modal
 
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
@@ -68,10 +70,16 @@ const Login = ({ onClose, onSwitch }) => {
       <div className="bg-white p-6 rounded-xl w-[90%] max-w-md shadow-lg relative">
         <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">✖</button>
         <h2 className="text-2xl font-bold text-center mb-1">Sign in to HomyStay</h2>
-        <p className="text-center text-sm text-gray-500 mb-4">Welcome back! Please sign in to continue</p>
+        <p className="text-center text-sm text-gray-500 mb-4">
+          Welcome back! Please sign in to continue
+        </p>
 
         <button className="w-full border py-2 flex items-center justify-center gap-2 rounded mb-4">
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
           Continue with Google
         </button>
 
@@ -88,7 +96,9 @@ const Login = ({ onClose, onSwitch }) => {
         <input
           type="email"
           placeholder="Enter your email"
-          className={`w-full border rounded px-3 py-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+          className={`w-full border rounded px-3 py-2 ${
+            errors.email ? 'border-red-500' : 'border-gray-300'
+          }`}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={handleEmailBlur}
@@ -102,7 +112,9 @@ const Login = ({ onClose, onSwitch }) => {
         <input
           type="password"
           placeholder="Enter your password"
-          className={`w-full border rounded px-3 py-2 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+          className={`w-full border rounded px-3 py-2 ${
+            errors.password ? 'border-red-500' : 'border-gray-300'
+          }`}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -118,7 +130,9 @@ const Login = ({ onClose, onSwitch }) => {
 
         <p className="text-xs text-center mt-3">
           Don’t have an account?{' '}
-          <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>Sign up</span>
+          <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>
+            Sign up
+          </span>
         </p>
       </div>
     </div>

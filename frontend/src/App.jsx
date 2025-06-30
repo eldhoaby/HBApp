@@ -1,5 +1,6 @@
+// 
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 
 import NavBar from "./components/Navbar";
@@ -13,9 +14,8 @@ import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
 import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
-import Payment from "./pages/Payment"; // ✅ FIXED: Correct import
+import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
-
 
 const App = () => {
   const location = useLocation();
@@ -23,6 +23,20 @@ const App = () => {
 
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+
+  // ✅ Clear login data on tab close or browser refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.removeItem("role");
+      localStorage.removeItem("user");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <div>
@@ -39,7 +53,6 @@ const App = () => {
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
-
         </Routes>
       </div>
 

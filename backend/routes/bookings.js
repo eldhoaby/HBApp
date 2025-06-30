@@ -5,18 +5,21 @@ const router = express.Router();
 
 // CREATE Booking
 router.post("/", async (req, res) => {
+  console.log("📦 Booking request received:", req.body); // ✅ Add this
+
   try {
     const booking = new Booking(req.body);
     await booking.save();
     res.status(201).json(booking);
   } catch (error) {
-    console.error("Booking Error:", error);
+    console.error("❌ Booking Error:", error);
     res.status(500).json({ error: "Failed to create booking" });
   }
 });
 
-// READ Bookings by User ID
-router.get("/:userId", async (req, res) => {
+
+// READ Bookings by User ID (no populate since hotel and room are embedded)
+router.get("/user/:userId", async (req, res) => {
   try {
     const bookings = await Booking.find({ userId: req.params.userId });
     res.status(200).json(bookings);
