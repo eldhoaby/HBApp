@@ -59,13 +59,20 @@ const RoomDetails = () => {
   const handleCheckAvailability = async (e) => {
     e.preventDefault();
 
-    if (new Date(checkIn) < new Date()) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+    checkInDate.setHours(0, 0, 0, 0);
+    checkOutDate.setHours(0, 0, 0, 0);
+
+    if (checkInDate < today) {
       setMessage("❌ Check-in date must be today or later.");
       setIsAvailable(false);
       return;
     }
 
-    if (new Date(checkOut) <= new Date(checkIn)) {
+    if (checkOutDate <= checkInDate) {
       setMessage("❌ Check-out date must be after check-in.");
       setIsAvailable(false);
       return;
@@ -98,7 +105,20 @@ const RoomDetails = () => {
 
   const handleAddToBookings = async () => {
     const userData = localStorage.getItem("user");
-    if (!userData) return navigate("/login");
+    if (!userData) {
+      navigate("/login");
+      return;
+    }
+
+    if (!checkIn || !checkOut) {
+      setMessage("❌ Please select both check-in and check-out dates.");
+      return;
+    }
+
+    if (!isAvailable) {
+      setMessage("❌ Please check availability before adding to bookings.");
+      return;
+    }
 
     const user = JSON.parse(userData);
     const nights = calculateNights(checkIn, checkOut);
