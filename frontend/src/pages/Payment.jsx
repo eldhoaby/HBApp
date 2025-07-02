@@ -4,25 +4,26 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { room, checkIn, checkOut, guests } = location.state;
+
+  const { booking } = location.state || {};
+  const { room, hotel, checkInDate, checkOutDate, guests, totalPrice, userId, _id } = booking || {};
 
   const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
-  // ✅ Properly extract userId from localStorage
-  const user = JSON.parse(localStorage.getItem('user'));
-  const userId = user?._id;
+  if (!booking) {
+    return <p className="pt-32 text-center text-red-600">Invalid booking. Please try again.</p>;
+  }
 
   const nights = Math.ceil(
-    (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24)
+    (new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24)
   );
-  const total = room.price * nights;
 
   const handlePayment = async () => {
     try {
       const res = await fetch('http://localhost:3000/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total }),
+        body: JSON.stringify({ amount: totalPrice }),
       });
 
       const data = await res.json();
@@ -32,46 +33,28 @@ const Payment = () => {
         key,
         amount: order.amount,
         currency: order.currency,
-        name: room.name,
-        description: `Booking for ${room.roomType}`,
+        name: hotel?.name || 'Hotel Booking',
+        description: `Booking for ${room?.roomType}`,
         order_id: order.id,
         handler: async function (response) {
-          alert('Payment Successful!');
-          console.log('Razorpay Payment ID:', response.razorpay_payment_id);
-
-          // Save booking to backend
-          const bookingData = {
-            userId,
-            room,
-            hotel: {
-              name: room.name,
-              address: room.address,
-            },
-            checkInDate: checkIn,
-            checkOutDate: checkOut,
-            guests,
-            totalPrice: total,
-            isPaid: true,
-          };
+          alert('Payment Successful! ✅');
 
           try {
-            await fetch('http://localhost:3000/bookings', {
-              method: 'POST',
+            await fetch(`http://localhost:3000/bookings/${_id}`, {
+              method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(bookingData),
+              body: JSON.stringify({ isPaid: true }),
             });
 
-            navigate('/confirmation', {
-              state: { booking: bookingData },
-            });
+            navigate('/my-bookings');
           } catch (err) {
-            console.error('Booking save failed:', err);
-            alert('Payment succeeded, but failed to save booking.');
+            console.error('Booking update error:', err);
+            alert('Payment succeeded, but failed to update booking.');
           }
         },
         prefill: {
-          name: user?.name || 'Guest',
-          email: user?.email || 'guest@example.com',
+          name: booking.name || 'Guest',
+          email: booking.email || 'guest@example.com',
           contact: '9999999999',
         },
         theme: {
@@ -91,12 +74,12 @@ const Payment = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white shadow-lg p-10 rounded-lg w-full max-w-lg text-center">
         <h2 className="text-2xl font-bold mb-4">Proceed to Payment</h2>
-        <p className="mb-2"><strong>Room:</strong> {room.name}</p>
-        <p className="mb-2"><strong>Check-in:</strong> {checkIn}</p>
-        <p className="mb-2"><strong>Check-out:</strong> {checkOut}</p>
+        <p className="mb-2"><strong>Room:</strong> {room?.name}</p>
+        <p className="mb-2"><strong>Check-in:</strong> {new Date(checkInDate).toDateString()}</p>
+        <p className="mb-2"><strong>Check-out:</strong> {new Date(checkOutDate).toDateString()}</p>
         <p className="mb-2"><strong>Guests:</strong> {guests}</p>
         <p className="text-lg font-medium mt-4 mb-6">
-          Total: ₹{room.price} x {nights} nights = ₹{total}
+          Total: ₹{room?.price} x {nights} nights = ₹{totalPrice}
         </p>
         <button
           onClick={handlePayment}

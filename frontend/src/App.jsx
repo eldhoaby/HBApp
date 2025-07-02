@@ -1,13 +1,15 @@
-// 
-// src/App.jsx
 import React, { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
+// Shared Components
 import NavBar from "./components/Navbar";
+import AdminNavbar from "./components/hotelOwner/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Admin from "./components/Admin";
+
+// Admin Page
+import Admin from "./components/hotelOwner/Admin";
 
 // Pages
 import Home from "./pages/Home";
@@ -19,28 +21,40 @@ import Confirmation from "./pages/Confirmation";
 
 const App = () => {
   const location = useLocation();
-  const isOwnerPath = location.pathname.includes("owner");
-
+  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
-  // ✅ Clear login data on tab close or browser refresh
+  // Check if admin route to use AdminNavbar
+  const isAdminPath = location.pathname.startsWith("/admin");
+
+  // Optional: Clear user info on tab close
   useEffect(() => {
     const handleBeforeUnload = () => {
       localStorage.removeItem("role");
       localStorage.removeItem("user");
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
+
+  // Switch between modals
+  const handleSwitchToRegister = () => {
+    setShowLogin(false);
+    setShowRegister(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setShowRegister(false);
+    setShowLogin(true);
+  };
 
   return (
     <div>
-      {!isOwnerPath && (
+      {/* Show correct navbar */}
+      {isAdminPath ? (
+        <AdminNavbar />
+      ) : (
         <NavBar onLoginClick={() => setShowLogin(true)} />
       )}
 
@@ -53,28 +67,43 @@ const App = () => {
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
+
+          {/* Optional: Direct login/register routes for fallback */}
+          <Route
+            path="/login"
+            element={
+              <Login
+                onClose={() => navigate("/")}
+                onSwitch={handleSwitchToRegister}
+              />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Register
+                onClose={() => navigate("/")}
+                onSwitch={handleSwitchToLogin}
+              />
+            }
+          />
         </Routes>
       </div>
 
       <Footer />
 
+      {/* Modal Versions (Popup style) */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
-          onSwitch={() => {
-            setShowLogin(false);
-            setShowRegister(true);
-          }}
+          onSwitch={handleSwitchToRegister}
         />
       )}
 
       {showRegister && (
         <Register
           onClose={() => setShowRegister(false)}
-          onSwitch={() => {
-            setShowRegister(false);
-            setShowLogin(true);
-          }}
+          onSwitch={handleSwitchToLogin}
         />
       )}
     </div>

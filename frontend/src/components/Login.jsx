@@ -1,14 +1,13 @@
-
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({ onClose, onSwitch }) => {
+const Login = ({ onClose = () => {}, onSwitch = () => {} }) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validate = () => {
@@ -27,41 +26,41 @@ const Login = ({ onClose, onSwitch }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleEmailBlur = () => {
-    if (email.trim() && !/^\S+@gmail\.com$/.test(email)) {
-      setErrors(prev => ({ ...prev, email: 'Invalid email format' }));
-    } else {
-      setErrors(prev => {
-        const { email: _, ...rest } = prev;
-        return rest;
-      });
-    }
-  };
-
   const handleLogin = async () => {
     if (!validate()) return;
 
     try {
-      const res = await axios.post('http://localhost:3000/login', { email, password });
-      const { role, message, name, ...userData } = res.data;
+      const res = await axios.post('http://localhost:3000/users/login', { email, password });
+      const user = res.data;
 
-      alert(message);
+      if (!user || !user._id) {
+        alert("Login failed: user data incomplete.");
+        return;
+      }
 
-      // ✅ Save to localStorage for NavBar
-      localStorage.setItem('role', role);
-      localStorage.setItem('user', JSON.stringify({ name, ...userData }));
+      localStorage.setItem('user', JSON.stringify(user));
+      if (user.role) {
+        localStorage.setItem('role', user.role);
+      }
 
-      // ✅ Redirect based on role
-      if (role === 'admin') {
+      alert("Login successful");
+
+      if (user.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/rooms');
       }
 
-      onClose(); // close login modal
+      onClose();
 
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
 
@@ -70,18 +69,7 @@ const Login = ({ onClose, onSwitch }) => {
       <div className="bg-white p-6 rounded-xl w-[90%] max-w-md shadow-lg relative">
         <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">✖</button>
         <h2 className="text-2xl font-bold text-center mb-1">Sign in to HomyStay</h2>
-        <p className="text-center text-sm text-gray-500 mb-4">
-          Welcome back! Please sign in to continue
-        </p>
-
-        <button className="w-full border py-2 flex items-center justify-center gap-2 rounded mb-4">
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            className="w-5 h-5"
-          />
-          Continue with Google
-        </button>
+        <p className="text-center text-sm text-gray-500 mb-4">Welcome back! Please sign in to continue</p>
 
         <div className="flex items-center gap-2 mb-4">
           <hr className="flex-1" />
@@ -89,38 +77,37 @@ const Login = ({ onClose, onSwitch }) => {
           <hr className="flex-1" />
         </div>
 
-        {/* Email */}
-        <label className="block text-sm font-medium mb-1">
-          Email <span className="text-red-500">*</span>
-        </label>
+        <label className="block text-sm font-medium mb-1">Email <span className="text-red-500">*</span></label>
         <input
           type="email"
           placeholder="Enter your email"
-          className={`w-full border rounded px-3 py-2 ${
-            errors.email ? 'border-red-500' : 'border-gray-300'
-          }`}
+          className={`w-full border rounded px-3 py-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          onBlur={handleEmailBlur}
+          onKeyDown={handleKeyDown}
         />
         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
 
-        {/* Password */}
-        <label className="block text-sm font-medium mt-4 mb-1">
-          Password <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-          className={`w-full border rounded px-3 py-2 ${
-            errors.password ? 'border-red-500' : 'border-gray-300'
-          }`}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <label className="block text-sm font-medium mt-4 mb-1">Password <span className="text-red-500">*</span></label>
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            className={`w-full border rounded px-3 py-2 pr-10 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(prev => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+          >
+            {showPassword ? '🙈' : '👁️'}
+          </button>
+        </div>
         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
 
-        {/* Login Button */}
         <button
           onClick={handleLogin}
           className="bg-black text-white w-full py-2 rounded mt-5"
@@ -129,10 +116,7 @@ const Login = ({ onClose, onSwitch }) => {
         </button>
 
         <p className="text-xs text-center mt-3">
-          Don’t have an account?{' '}
-          <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>
-            Sign up
-          </span>
+          Don’t have an account? <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>Sign up</span>
         </p>
       </div>
     </div>
