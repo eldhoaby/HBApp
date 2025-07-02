@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HotelCard from './HotelCard';
 import Title from './Title';
-import Login from './Login'; // ⬅️ Make sure this path matches your project
+import Login from './Login';
 
 const FeaturedDestination = () => {
   const navigate = useNavigate();
@@ -35,6 +35,11 @@ const FeaturedDestination = () => {
     fetchRooms();
   }, []);
 
+  const handleViewAllDestinations = () => {
+    navigate('/rooms');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className='flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 py-20'>
       <Title
@@ -54,28 +59,22 @@ const FeaturedDestination = () => {
               key={room._id || index}
               room={room}
               index={index}
-              onBookNow={() => setShowLogin(true)} // ⬅️ Triggers modal
+              onBookNow={() => setShowLogin(true)}
             />
           ))}
       </div>
 
       <button
-        onClick={() => {
-          navigate('/rooms');
-          window.scrollTo(0, 0);
-        }}
+        onClick={handleViewAllDestinations}
         className='my-16 px-6 py-3 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all'
       >
         View All Destinations
       </button>
 
-      {/* ⬇️ Show login popup modal */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
-          onSwitch={() => {
-            // optional: switch to signup modal
-          }}
+          onSwitch={() => {}}
         />
       )}
     </div>

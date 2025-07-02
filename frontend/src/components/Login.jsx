@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({ onClose = () => {}, onSwitch = () => {} }) => {
+const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () => {} }) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -45,13 +45,10 @@ const Login = ({ onClose = () => {}, onSwitch = () => {} }) => {
 
       alert("Login successful");
 
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/rooms');
-      }
+      onClose(); // Close modal
 
-      onClose();
+      // ✅ Trigger success callback (like navigating to room details)
+      onLoginSuccess();
 
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
