@@ -49,11 +49,18 @@ router.post("/register", async (req, res) => {
   try {
     const { name, age, country, phoneNumber, email, password } = req.body;
 
+    // ✅ Basic validation
+    if (!name || !age || !country || !phoneNumber || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // ✅ Check if user already exists
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // ✅ Create and save new user
     const newUser = new User({
       name,
       age,
