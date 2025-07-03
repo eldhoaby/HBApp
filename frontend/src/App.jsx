@@ -14,6 +14,7 @@ import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
+import Layout from "./pages/hotelOwner/Layout";
 
 const App = () => {
   const location = useLocation();
@@ -51,7 +52,7 @@ const App = () => {
       <div className="min-h-[70vh]">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/dashboard" element={<Layout />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/rooms" element={<AllRooms setUser={setUser} />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
