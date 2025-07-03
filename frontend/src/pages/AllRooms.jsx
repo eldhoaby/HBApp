@@ -7,7 +7,7 @@ import {
 } from 'react-icons/fa';
 import StarRating from '../components/StarRating';
 import Login from '../components/Login';
-import Register from '../components/Register'; // ✅ Added Register
+import Register from '../components/Register';
 
 const amenityIcons = {
   "WiFi": <FaWifi className="text-blue-600" />,
@@ -61,7 +61,7 @@ const AllRooms = () => {
   const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
   const [selectedSortOption, setSelectedSortOption] = useState('');
   const [showLogin, setShowLogin] = useState(false);
-  const [showRegister, setShowRegister] = useState(false); // ✅
+  const [showRegister, setShowRegister] = useState(false);
   const [roomToNavigate, setRoomToNavigate] = useState(null);
 
   const roomTypes = ["Single Bed", "Double Bed", "Luxury Room", "Family Suit"];
@@ -88,7 +88,7 @@ const AllRooms = () => {
       setShowLogin(true);
     } else {
       navigate(`/rooms/${roomId}`);
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // ✅ Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -99,7 +99,7 @@ const AllRooms = () => {
   };
 
   const handlePriceRangeChange = (checked, label) => {
-    const cleanLabel = label.replace('₹', '').trim();
+    const cleanLabel = label.trim().replace('₹', '').trim();
     setSelectedPriceRanges((prev) =>
       checked ? [...prev, cleanLabel] : prev.filter((item) => item !== cleanLabel)
     );
@@ -111,9 +111,10 @@ const AllRooms = () => {
 
   const handleLoginSuccess = () => {
     setShowLogin(false);
+    window.dispatchEvent(new Event('storage'));
     if (roomToNavigate) {
       navigate(`/rooms/${roomToNavigate}`);
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // ✅ Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setRoomToNavigate(null);
     }
   };
@@ -224,7 +225,7 @@ const AllRooms = () => {
               {priceRanges.map((range, i) => (
                 <CheckBox
                   key={i}
-                  label={`₹ ${range}`}
+                  label={range}
                   selected={selectedPriceRanges.includes(range)}
                   onChange={handlePriceRangeChange}
                 />
@@ -251,7 +252,7 @@ const AllRooms = () => {
           onClose={() => setShowLogin(false)}
           onSwitch={() => {
             setShowLogin(false);
-            setShowRegister(true); // ✅ Switch to register
+            setShowRegister(true);
           }}
           onLoginSuccess={handleLoginSuccess}
         />
@@ -263,7 +264,7 @@ const AllRooms = () => {
           onClose={() => setShowRegister(false)}
           onSwitch={() => {
             setShowRegister(false);
-            setShowLogin(true); // ✅ Switch to login
+            setShowLogin(true);
           }}
         />
       )}

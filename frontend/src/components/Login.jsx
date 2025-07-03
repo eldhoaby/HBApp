@@ -38,17 +38,17 @@ const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () =>
         return;
       }
 
+      // Store user info
       localStorage.setItem('user', JSON.stringify(user));
       if (user.role) {
         localStorage.setItem('role', user.role);
       }
 
-      alert("Login successful");
-
-      onClose(); // Close modal
-
-      // ✅ Trigger success callback (like navigating to room details)
+      // ✅ Notify parent (AllRooms) to navigate to stored room
       onLoginSuccess();
+
+      // ✅ Close modal
+      onClose();
 
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
