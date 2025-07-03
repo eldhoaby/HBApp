@@ -13,30 +13,28 @@ import bookingRoutes from "./routes/bookings.js";
 import paymentRoutes from "./routes/payment.js";
 import razorpayRoutes from "./routes/razorpay.js";
 
-// DB connection
+// Connect to MongoDB
 connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// ✅ API status route
+// ✅ Health check route
 app.get("/", (req, res) => res.send("✅ API is working fine"));
 
-// ✅ Route mounting
-app.use("/users", authRoutes);         // 🔑 Handles /users/login and /users/register
+// ✅ Mount API routes
+app.use("/users", authRoutes);          // Handles /users/login, /users/register, etc.
 app.use("/rooms", roomRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/razorpay", razorpayRoutes);
+app.use("/admin", adminRoutes);         // Changed from "/" to "/admin" to avoid route conflict
 
-// Optional admin route
-app.use("/", adminRoutes);
-
-// ❌ 404 handler
+// ❌ Catch-all 404 handler (should be after all routes)
 app.use((req, res) => {
   res.status(404).json({ error: "❌ Route not found" });
 });
@@ -49,5 +47,5 @@ app.use((err, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
