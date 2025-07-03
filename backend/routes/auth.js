@@ -1,74 +1,74 @@
+// routes/auth.js
+
 import express from "express";
+import dotenv from "dotenv";
 import User from "../models/user.js";
 
+dotenv.config();
 const router = express.Router();
 
-router.post("/", async (req, res) => {
-  console.log("POST /users hit", req.body);
-  try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(200).json({ message: "Registration successful!" });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ message: "Email already exists" });
-    }
-    res.status(500).json({ message: "Registration failed" });
-  }
-});
-
-
+// ✅ POST /users/login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
+  // ✅ Admin login using .env
+  if (
+    email === process.env.ADMIN_EMAIL &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    return res.status(200).json({
+      message: "Admin login successful",
+      role: "admin",
+      name: "Admin",
+      email,
+    });
+  }
+
   try {
     const user = await User.findOne({ email });
+
     if (!user || user.password !== password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    res.status(200).json({ message: "Login successful", user });
+    res.status(200).json({
+      message: "User login successful",
+      role: "user",
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Login error" });
+    console.error("Login error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
-router.get("/", async (req, res) => {
+// ✅ POST /users/register
+router.post("/register", async (req, res) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching users" });
-  }
-});
+    const { name, age, country, phoneNumber, email, password } = req.body;
 
-
-router.put("/:id", async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    res.status(200).json({ message: "User updated successfully!" });
+    const newUser = new User({
+      name,
+      age,
+      country,
+      phoneNumber,
+      email,
+      password,
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: `Error updating user: ${error.message}` });
+    console.error("Registration error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-router.delete("/:id", async (req, res) => {
-  try {
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting user" });
-  }
-});
-
-export default router;
+export default router;
