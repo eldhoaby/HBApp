@@ -54,7 +54,9 @@ const Register = ({ onClose, onSwitch }) => {
     setErrors(prev => ({ ...prev, [field]: errorMsg }));
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    if (e) e.preventDefault(); // Prevent default form submission
+
     const newErrors = {};
     Object.entries(form).forEach(([field, value]) => {
       const error = validate(field, value);
@@ -71,7 +73,6 @@ const Register = ({ onClose, onSwitch }) => {
 
       const baseURL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000';
       const res = await axios.post(`${baseURL}/users/register`, form);
-
 
       console.log('Registration response:', res.data);
       alert(res.data?.message || 'Registration successful!');
@@ -117,19 +118,21 @@ const Register = ({ onClose, onSwitch }) => {
           <hr className="flex-1" />
         </div>
 
-        {renderInput('Full Name', 'name', 'text', 'Enter your full name')}
-        {renderInput('Age', 'age', 'number', 'Enter your age')}
-        {renderInput('Country', 'country', 'text', 'Enter your country')}
-        {renderInput('Phone Number', 'phoneNumber', 'text', 'Enter your phone number')}
-        {renderInput('Email Address', 'email', 'email', 'Enter your email')}
-        {renderInput('Password', 'password', 'password', 'Enter your password')}
+        <form onSubmit={handleRegister}>
+          {renderInput('Full Name', 'name', 'text', 'Enter your full name')}
+          {renderInput('Age', 'age', 'number', 'Enter your age')}
+          {renderInput('Country', 'country', 'text', 'Enter your country')}
+          {renderInput('Phone Number', 'phoneNumber', 'text', 'Enter your phone number')}
+          {renderInput('Email Address', 'email', 'email', 'Enter your email')}
+          {renderInput('Password', 'password', 'password', 'Enter your password')}
 
-        <button
-          onClick={handleRegister}
-          className="bg-black text-white w-full py-2 rounded mt-4"
-        >
-          Continue →
-        </button>
+          <button
+            type="submit"
+            className="bg-black text-white w-full py-2 rounded mt-4"
+          >
+            Continue →
+          </button>
+        </form>
 
         <p className="text-xs text-center mt-3">
           Already have an account?{' '}

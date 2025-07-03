@@ -35,6 +35,16 @@ const FeaturedDestination = () => {
     fetchRooms();
   }, []);
 
+  const handleBookNow = () => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      navigate('/rooms');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setShowLogin(true);
+    }
+  };
+
   const handleViewAllDestinations = () => {
     navigate('/rooms');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -59,7 +69,7 @@ const FeaturedDestination = () => {
               key={room._id || index}
               room={room}
               index={index}
-              onBookNow={() => setShowLogin(true)}
+              onBookNow={handleBookNow}
             />
           ))}
       </div>
@@ -75,6 +85,11 @@ const FeaturedDestination = () => {
         <Login
           onClose={() => setShowLogin(false)}
           onSwitch={() => {}}
+          onLoginSuccess={() => {
+            setShowLogin(false);
+            navigate('/rooms');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         />
       )}
     </div>
