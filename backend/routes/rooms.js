@@ -1,6 +1,6 @@
 import express from "express";
 import Room from "../models/room.js";
-import Booking from "../models/booking.js"; // ✅ Required to check date conflicts
+import Booking from "../models/booking.js";
 
 const router = express.Router();
 
@@ -56,7 +56,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// ✅ Check room availability with validation and booking conflict check
+// ✅ Check room availability
 router.post("/check-availability", async (req, res) => {
   try {
     const { roomId, checkInDate, checkOutDate } = req.body;
@@ -77,7 +77,6 @@ router.post("/check-availability", async (req, res) => {
       return res.status(400).json({ available: false, message: "Check-out must be after check-in." });
     }
 
-    // Check if the room is already booked for these dates
     const overlappingBookings = await Booking.find({
       roomId,
       $or: [
@@ -96,6 +95,40 @@ router.post("/check-availability", async (req, res) => {
   } catch (error) {
     console.error("Availability check error:", error);
     res.status(500).json({ available: false, message: "Server error checking availability." });
+  }
+});
+
+// ✅ Search places by query (starts with city or address)
+router.get("/search-places", async (req, res) => {
+  try {
+    const query = req.query.query?.trim().toLowerCase();
+    if (!query) return res.json([]);
+
+    const regex = new RegExp(`^${query}`, "i");
+
+    const rooms = await Room.find({
+      $or: [
+        { city: { $regex: regex } },
+        { address: { $regex: regex } },
+        { "hotel.address": { $regex: regex } }
+      ]
+    }).limit(10);
+
+    const placesSet = new Set();
+    rooms.forEach((room) => {
+      if (room.city?.toLowerCase().startsWith(query)) {
+        placesSet.add(room.city);
+      } else if (room.address?.toLowerCase().startsWith(query)) {
+        placesSet.add(room.address);
+      } else if (room.hotel?.address?.toLowerCase().startsWith(query)) {
+        placesSet.add(room.hotel.address);
+      }
+    });
+
+    res.json([...placesSet]);
+  } catch (err) {
+    console.error("Error fetching places:", err);
+    res.status(500).json({ error: "Server error fetching places" });
   }
 });
 

@@ -21,32 +21,26 @@ const Register = ({ onClose, onSwitch }) => {
         if (!value.trim()) message = 'Name is required';
         else if (!/^[A-Za-z ]+$/.test(value)) message = 'Only letters allowed';
         break;
-
       case 'age':
         if (!value.trim()) message = 'Age is required';
         else if (!/^\d+$/.test(value)) message = 'Only numbers allowed';
         break;
-
       case 'country':
         if (!value.trim()) message = 'Country is required';
         else if (!/^[A-Za-z ]+$/.test(value)) message = 'Only letters allowed';
         break;
-
       case 'phoneNumber':
         if (!value.trim()) message = 'Phone number is required';
         else if (!/^\d{10}$/.test(value)) message = 'Must be 10-digit number';
         break;
-
       case 'email':
         if (!value.trim()) message = 'Email is required';
         else if (!/^\S+@\S+\.\S+$/.test(value)) message = 'Invalid email';
         break;
-
       case 'password':
         if (!value.trim()) message = 'Password is required';
         else if (value.length < 6) message = 'Min 6 characters required';
         break;
-
       default:
         break;
     }
@@ -56,7 +50,6 @@ const Register = ({ onClose, onSwitch }) => {
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
-
     const errorMsg = validate(field, value);
     setErrors(prev => ({ ...prev, [field]: errorMsg }));
   };
@@ -74,11 +67,18 @@ const Register = ({ onClose, onSwitch }) => {
     }
 
     try {
-      const res = await axios.post('http://localhost:3000/users', form);
+      console.log('Submitting registration form:', form);
+
+      const baseURL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000';
+      const res = await axios.post(`${baseURL}/users/register`, form);
+
+
+      console.log('Registration response:', res.data);
       alert(res.data?.message || 'Registration successful!');
-      onSwitch(); // ✅ Navigate to login
+      onSwitch(); // Switch to login
     } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
+      console.error('Registration error:', err);
+      alert(err.response?.data?.message || err.message || 'Registration failed');
     }
   };
 
