@@ -10,24 +10,26 @@ const Admin = () => {
     password: '',
   });
 
-  // If admin already logged in, redirect to dashboard
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (user) {
-      navigate('/admin/dashboard'); // or wherever your admin panel is
+      navigate('/admin/dashboard');
     }
   }, [navigate]);
 
   const handleLogin = () => {
+    console.log("Sending login:", credentials);  // ✅ Debug
+
     axios
       .post('http://localhost:3000/admin/login', credentials)
       .then((res) => {
+        console.log("Response:", res.data);  // ✅ Debug
         localStorage.setItem('user', JSON.stringify(res.data));
         alert('Login successful!');
         navigate('/admin/dashboard');
       })
       .catch((err) => {
-        console.error(err);
+        console.error("Login failed:", err.response?.data || err.message);  // ✅ Debug
         alert('Invalid email or password');
       });
   };

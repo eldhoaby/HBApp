@@ -1,13 +1,16 @@
+// routes/admin.js
+
 import express from "express";
-import User from "../models/user.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 const router = express.Router();
 
+// ✅ POST /admin/login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
+  // ✅ Match with admin credentials from .env
   if (
     email === process.env.ADMIN_EMAIL &&
     password === process.env.ADMIN_PASSWORD
@@ -19,23 +22,7 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  try {
-    const user = await User.findOne({ email });
-
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    return res.status(200).json({
-      message: "Login successful",
-      role: "user",
-      name: user.name,
-      email: user.email
-    });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
+  res.status(401).json({ message: "Invalid email or password" });
 });
 
 export default router;

@@ -5,10 +5,10 @@ import User from "../models/user.js";
 dotenv.config();
 const router = express.Router();
 
-// ✅ GET /users - Get all registered users
+// ✅ GET /users - Get all users
 router.get("/", async (req, res) => {
   try {
-    const users = await User.find().select("-password"); // exclude password
+    const users = await User.find().select("-password"); // hide password
     res.status(200).json(users);
   } catch (error) {
     console.error("Fetch users error:", error.message);
@@ -21,7 +21,6 @@ router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
-
     res.status(200).json(user);
   } catch (error) {
     console.error("Get user error:", error.message);
@@ -29,11 +28,11 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ✅ POST /users/login - User login
+// ✅ POST /users/login - Admin + User login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  // ✅ Admin login using .env
+  // ✅ Admin login
   if (
     email === process.env.ADMIN_EMAIL &&
     password === process.env.ADMIN_PASSWORD
@@ -46,9 +45,9 @@ router.post("/login", async (req, res) => {
     });
   }
 
+  // ✅ User login
   try {
     const user = await User.findOne({ email });
-
     if (!user || user.password !== password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -66,7 +65,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ✅ POST /users/register - User registration
+// ✅ POST /users/register - New user registration
 router.post("/register", async (req, res) => {
   try {
     const { name, age, country, phoneNumber, email, password } = req.body;
@@ -80,16 +79,9 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = new User({
-      name,
-      age,
-      country,
-      phoneNumber,
-      email,
-      password,
-    });
-
+    const newUser = new User({ name, age, country, phoneNumber, email, password });
     await newUser.save();
+
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.error("Registration error:", error.message);
@@ -97,19 +89,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ✅ PUT /users/:id - Update user by ID
+// ✅ PUT /users/:id - Update user
 router.put("/:id", async (req, res) => {
   try {
     const updates = req.body;
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { new: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updates, { new: true });
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
 
     res.json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
@@ -118,13 +104,11 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ DELETE /users/:id - Delete user by ID
+// ✅ DELETE /users/:id - Delete user
 router.delete("/:id", async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!deletedUser) return res.status(404).json({ message: "User not found" });
 
     res.json({ message: "User deleted successfully" });
   } catch (error) {

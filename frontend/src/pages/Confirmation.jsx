@@ -88,7 +88,6 @@ const Confirmation = () => {
         </div>
       </div>
 
-      {/* Go back to rooms link */}
       <p className="mt-6 text-gray-700 text-center">
         Go back to <Link to="/rooms" className="text-blue-600 underline hover:text-blue-800">Rooms</Link> page
       </p>

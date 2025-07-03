@@ -13,39 +13,38 @@ import bookingRoutes from "./routes/bookings.js";
 import paymentRoutes from "./routes/payment.js";
 import razorpayRoutes from "./routes/razorpay.js";
 
-// Connect to MongoDB
+// Connect to DB
 connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ Health check route
+// Routes
 app.get("/", (req, res) => res.send("✅ API is working fine"));
 
-// ✅ Mount API routes
-app.use("/users", authRoutes);          // Handles /users/login, /users/register, etc.
+app.use("/users", authRoutes);         // login/register etc.
 app.use("/rooms", roomRoutes);
 app.use("/bookings", bookingRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/razorpay", razorpayRoutes);
-app.use("/admin", adminRoutes);         // Changed from "/" to "/admin" to avoid route conflict
+app.use("/admin", adminRoutes);       // ✅ Mounted at /admin
 
-// ❌ Catch-all 404 handler (should be after all routes)
+// 404 Handler
 app.use((req, res) => {
   res.status(404).json({ error: "❌ Route not found" });
 });
 
-// ❗ Global error handler
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error("❌ Server Error:", err.stack);
   res.status(500).json({ error: "Something went wrong!" });
 });
 
-// Start server
+// Start Server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

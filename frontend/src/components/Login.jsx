@@ -33,23 +33,20 @@ const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () =>
       const res = await axios.post('http://localhost:3000/users/login', { email, password });
       const user = res.data;
 
-      if (!user || !user._id) {
-        alert("Login failed: user data incomplete.");
-        return;
-      }
-
-      // Store user info
+      // Store user/admin info in localStorage
       localStorage.setItem('user', JSON.stringify(user));
       if (user.role) {
         localStorage.setItem('role', user.role);
       }
 
-      // ✅ Notify parent (e.g. FeaturedDestination) to take action
-      onLoginSuccess();
-
-      // ✅ Close modal
-      onClose();
-
+      // Redirect based on role
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        // If it's a normal user, close login modal and trigger any parent UI logic
+        onLoginSuccess();
+        onClose();
+      }
     } catch (err) {
       alert(err.response?.data?.message || 'Login failed');
     }
@@ -74,7 +71,9 @@ const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () =>
           <hr className="flex-1" />
         </div>
 
-        <label className="block text-sm font-medium mb-1">Email <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium mb-1">
+          Email <span className="text-red-500">*</span>
+        </label>
         <input
           type="email"
           placeholder="Enter your email"
@@ -85,10 +84,12 @@ const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () =>
         />
         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
 
-        <label className="block text-sm font-medium mt-4 mb-1">Password <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium mt-4 mb-1">
+          Password <span className="text-red-500">*</span>
+        </label>
         <div className="relative">
           <input
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
             className={`w-full border rounded px-3 py-2 pr-10 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
             value={password}
@@ -113,7 +114,10 @@ const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () =>
         </button>
 
         <p className="text-xs text-center mt-3">
-          Don’t have an account? <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>Sign up</span>
+          Don’t have an account?{' '}
+          <span className="text-blue-600 cursor-pointer" onClick={onSwitch}>
+            Sign up
+          </span>
         </p>
       </div>
     </div>

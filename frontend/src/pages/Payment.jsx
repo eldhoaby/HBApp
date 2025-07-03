@@ -40,13 +40,21 @@ const Payment = () => {
           alert('Payment Successful! ✅');
 
           try {
-            await fetch(`http://localhost:3000/bookings/${_id}`, {
+            // ✅ Update booking to mark as paid
+            const updateRes = await fetch(`http://localhost:3000/bookings/${_id}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ isPaid: true }),
             });
 
-            navigate('/my-bookings');
+            if (!updateRes.ok) {
+              throw new Error("Booking update failed.");
+            }
+
+            // ✅ Navigate to confirmation with paid booking
+            navigate('/confirmation', {
+              state: { booking: { ...booking, isPaid: true } },
+            });
           } catch (err) {
             console.error('Booking update error:', err);
             alert('Payment succeeded, but failed to update booking.');

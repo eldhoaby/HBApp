@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import NavBar from "./components/Navbar";
-import AdminNavbar from "./components/hotelOwner/Navbar";
+import AdminNavbar from "./components/hotelOwner/AdminNavbar"; // ✅ Corrected import
+import Footer from "./components/Footer"; // ✅ Keep footer if used elsewhere
+
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Admin from "./components/hotelOwner/Admin";
+
 import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
 import AllRooms from "./pages/AllRooms";
@@ -54,8 +57,24 @@ const App = () => {
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
-          <Route path="/login" element={<Login onClose={() => navigate("/")} onSwitch={handleSwitchToRegister} />} />
-          <Route path="/register" element={<Register onClose={() => navigate("/")} onSwitch={handleSwitchToLogin} />} />
+          <Route
+            path="/login"
+            element={
+              <Login
+                onClose={() => navigate("/")}
+                onSwitch={handleSwitchToRegister}
+              />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Register
+                onClose={() => navigate("/")}
+                onSwitch={handleSwitchToLogin}
+              />
+            }
+          />
         </Routes>
       </div>
 
@@ -76,6 +95,8 @@ const App = () => {
           onSwitch={handleSwitchToLogin}
         />
       )}
+
+      {!isAdminPath && <Footer />}
     </div>
   );
 };

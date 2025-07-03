@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.svg";           // Your existing logo
-import adminIcon from "../../assets/adminIcon.png"; // Your custom admin icon
+import logo from "../../assets/logo.svg";           // Logo
+import adminIcon from "../../assets/adminIcon.png"; // Admin avatar icon
 
 const AdminNavbar = () => {
   const location = useLocation();
@@ -37,7 +37,7 @@ const AdminNavbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("role");
     localStorage.removeItem("user");
-    navigate("/");
+    navigate("/"); // ✅ Redirect to homepage
   };
 
   return (
@@ -57,7 +57,7 @@ const AdminNavbar = () => {
         />
       </Link>
 
-      {/* Admin icon on right with dropdown */}
+      {/* Admin icon + dropdown */}
       {role === "admin" && (
         <div className="relative" ref={dropdownRef}>
           <img

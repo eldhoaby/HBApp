@@ -37,7 +37,7 @@ const MyBookings = () => {
   };
 
   const handlePayNow = (booking) => {
-    window.scrollTo(0, 0); // ⬆ Scroll to top before navigation
+    window.scrollTo(0, 0);
     navigate("/payment", {
       state: { booking },
     });
@@ -112,22 +112,21 @@ const MyBookings = () => {
               </div>
 
               {!booking.isPaid && (
-                <>
-                  <button
-                    className="px-4 py-1.5 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all"
-                    onClick={() => handlePayNow(booking)}
-                  >
-                    Pay Now
-                  </button>
-
-                  <button
-                    className="px-4 py-1.5 text-xs text-red-600 border border-red-400 rounded-full hover:bg-red-50 transition-all"
-                    onClick={() => handleRemove(booking._id)}
-                  >
-                    Remove
-                  </button>
-                </>
+                <button
+                  className="px-4 py-1.5 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all"
+                  onClick={() => handlePayNow(booking)}
+                >
+                  Pay Now
+                </button>
               )}
+
+              {/* 🔥 Now visible for both paid and unpaid bookings */}
+              <button
+                className="px-4 py-1.5 text-xs text-red-600 border border-red-400 rounded-full hover:bg-red-50 transition-all"
+                onClick={() => handleRemove(booking._id)}
+              >
+                Remove
+              </button>
             </div>
           </div>
         ))}

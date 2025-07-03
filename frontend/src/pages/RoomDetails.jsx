@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import StarRating from "../components/StarRating";
 import {
   FaWifi, FaParking, FaSwimmer, FaTv, FaFireAlt, FaSnowflake,
   FaUtensils, FaCoffee, FaLeaf, FaBiking, FaMountain, FaWater,
@@ -51,7 +50,6 @@ const RoomDetails = () => {
 
   const handleCheckAvailability = async (e) => {
     e.preventDefault();
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const checkInDate = new Date(checkIn);
@@ -92,6 +90,65 @@ const RoomDetails = () => {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
+  const handleBooking = async () => {
+    const userJson = localStorage.getItem("user");
+    if (!userJson) {
+      alert("Please log in to book.");
+      return navigate("/login");
+    }
+
+    const user = JSON.parse(userJson);
+    if (!checkIn || !checkOut) {
+      setMessage("❌ Please select both check-in and check-out dates.");
+      return;
+    }
+
+    if (!isAvailable) {
+      setMessage("❌ Please check availability before booking.");
+      return;
+    }
+
+    const nights = calculateNights(checkIn, checkOut);
+    const totalPrice = room.price * nights;
+
+    const bookingData = {
+      userId: user._id,
+      hotel: { name: room.name, address: room.address },
+      room: {
+        roomType: room.roomType,
+        images: room.images,
+        name: room.name,
+        address: room.address,
+        amenities: room.amenities,
+        price: room.price,
+      },
+      checkInDate: checkIn,
+      checkOutDate: checkOut,
+      guests,
+      totalPrice,
+      isPaid: false,
+      name: user.name,
+      email: user.email
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!res.ok) throw new Error("Booking failed");
+
+      const createdBooking = await res.json();
+      navigate("/payment", { state: { booking: createdBooking } });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("Booking Error:", err);
+      setMessage("❌ Failed to proceed to payment.");
+    }
+  };
+
   const handleAddToBookings = async () => {
     const userJson = localStorage.getItem("user");
     if (!userJson) {
@@ -99,20 +156,7 @@ const RoomDetails = () => {
       return navigate("/login");
     }
 
-    let user;
-    try {
-      user = JSON.parse(userJson);
-    } catch (err) {
-      console.error("Invalid user JSON:", err);
-      localStorage.removeItem("user");
-      return navigate("/login");
-    }
-
-    if (!user || !user._id) {
-      alert("Invalid login session. Please log in again.");
-      return navigate("/login");
-    }
-
+    const user = JSON.parse(userJson);
     if (!checkIn || !checkOut) {
       setMessage("❌ Please select both check-in and check-out dates.");
       return;
@@ -161,58 +205,15 @@ const RoomDetails = () => {
     }
   };
 
-  const handleBooking = () => {
-    const userJson = localStorage.getItem("user");
-    if (!userJson) {
-      alert("Please log in to book.");
-      return navigate("/login");
-    }
-
-    if (!checkIn || !checkOut) {
-      setMessage("❌ Please select both check-in and check-out dates.");
-      return;
-    }
-
-    if (!isAvailable) {
-      setMessage("❌ Please check availability before booking.");
-      return;
-    }
-
-    const nights = calculateNights(checkIn, checkOut);
-    const totalPrice = room.price * nights;
-
-    const booking = {
-      hotel: { name: room.name, address: room.address },
-      room: {
-        roomType: room.roomType,
-        images: room.images,
-        name: room.name,
-        address: room.address,
-        amenities: room.amenities,
-        price: room.price,
-      },
-      checkInDate: checkIn,
-      checkOutDate: checkOut,
-      guests,
-      totalPrice,
-      isPaid: false,
-    };
-
-    navigate("/payment", {
-      state: { booking },
-    });
-
-    // ✅ Scroll to top when navigating
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   if (error) return <p className='pt-32 text-red-600'>{error}</p>;
   if (!room) return <p className='pt-32'>Loading room details...</p>;
 
   return (
     <div className='pt-32 pb-16 px-4 md:px-16 lg:px-24 xl:px-32'>
       <h1 className='text-3xl md:text-4xl font-playfair'>{room.name}</h1>
-      <p className='text-sm text-gray-500 mt-1 flex items-center'><MdLocationOn className="mr-1" />{room.address}</p>
+      <p className='text-sm text-gray-500 mt-1 flex items-center'>
+        <MdLocationOn className="mr-1" />{room.address}
+      </p>
 
       <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-6'>
         <img src={mainImage} alt="Room" className='w-full rounded-xl object-cover' />
