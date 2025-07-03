@@ -70,7 +70,8 @@ const Register = ({ onClose, onSwitch }) => {
       console.log('Submitting registration form:', form);
 
       const baseURL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000';
-      const res = await axios.post(`${baseURL}/users`, form);
+      const res = await axios.post(`${baseURL}/users/register`, form);
+
 
       console.log('Registration response:', res.data);
       alert(res.data?.message || 'Registration successful!');
