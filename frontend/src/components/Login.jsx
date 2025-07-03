@@ -44,7 +44,7 @@ const Login = ({ onClose = () => {}, onSwitch = () => {}, onLoginSuccess = () =>
         localStorage.setItem('role', user.role);
       }
 
-      // ✅ Notify parent (AllRooms) to navigate to stored room
+      // ✅ Notify parent (e.g. FeaturedDestination) to take action
       onLoginSuccess();
 
       // ✅ Close modal
