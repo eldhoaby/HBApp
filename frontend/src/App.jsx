@@ -1,9 +1,7 @@
-// App.js
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import NavBar from "./components/Navbar";
 import AdminNavbar from "./components/hotelOwner/Navbar";
-import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Admin from "./components/hotelOwner/Admin";
@@ -17,6 +15,7 @@ import Confirmation from "./pages/Confirmation";
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState(null);
@@ -59,8 +58,6 @@ const App = () => {
           <Route path="/register" element={<Register onClose={() => navigate("/")} onSwitch={handleSwitchToLogin} />} />
         </Routes>
       </div>
-
-      <Footer />
 
       {showLogin && (
         <Login

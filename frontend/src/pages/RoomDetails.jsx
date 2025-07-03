@@ -30,6 +30,7 @@ const RoomDetails = () => {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
+  const [guestError, setGuestError] = useState("");
   const [isAvailable, setIsAvailable] = useState(null);
   const [message, setMessage] = useState("");
 
@@ -251,7 +252,25 @@ const RoomDetails = () => {
           </div>
           <div>
             <label>Guests</label>
-            <input type="number" min="1" value={guests} onChange={(e) => setGuests(e.target.value)} className='block w-20 rounded border border-gray-300 px-3 py-2 mt-1' />
+            <input
+  type="number"
+  min="1"
+  value={guests}
+  onChange={(e) => {
+    const value = parseInt(e.target.value, 10);
+    if (value > 5) {
+      setGuestError("❌ Maximum 5 guests allowed.");
+    } else {
+      setGuests(value);
+      setGuestError("");
+    }
+  }}
+  className='block w-20 rounded border border-gray-300 px-3 py-2 mt-1'
+/>
+{guestError && (
+  <p className="text-red-600 text-sm mt-1">{guestError}</p>
+)}
+
           </div>
           <button type='submit' className="bg-blue-700 text-white px-6 py-2 rounded mt-6">Check Availability</button>
         </form>
