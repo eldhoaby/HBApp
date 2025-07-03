@@ -88,9 +88,11 @@ const NavBar = () => {
 
   return (
     <>
+      {/* === MAIN NAV === */}
       <nav className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 ${
         isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"
       }`}>
+        {/* === LOGO === */}
         <Link to="/">
           <img
             src={assets.logo}
@@ -99,7 +101,7 @@ const NavBar = () => {
           />
         </Link>
 
-        {/* Desktop Nav */}
+        {/* === DESKTOP LINKS === */}
         <div className="hidden md:flex items-center gap-4 lg:gap-8">
           {navLinks.map((link, i) => (
             <button
@@ -117,21 +119,14 @@ const NavBar = () => {
               }`} />
             </button>
           ))}
-
-          {/* Dashboard button for admin */}
-          {role === "admin" && (
-            <button
-              onClick={() => navigate("/admin")}
-              className={`border px-4 py-1 text-sm font-light rounded-full ${
-                isScrolled ? "text-black" : "text-white"
-              }`}
-            >
-              Dashboard
-            </button>
-          )}
+          <button className={`border px-4 py-1 text-sm font-light rounded-full ${
+            isScrolled ? "text-black" : "text-white"
+          }`}>
+            Dashboard
+          </button>
         </div>
 
-        {/* Right Side Icons */}
+        {/* === RIGHT PROFILE ICONS === */}
         <div className="hidden md:flex items-center gap-4 relative">
           <img
             src={assets.searchIcon}
@@ -139,7 +134,7 @@ const NavBar = () => {
             className={`h-7 ${isScrolled && "invert"}`}
           />
 
-          {/* User Dropdown */}
+          {/* === USER DROPDOWN === */}
           {role === "user" && (
             <div ref={dropdownRef} className="relative">
               <div
@@ -151,12 +146,10 @@ const NavBar = () => {
               </div>
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
-                  <Link to="/my-bookings" className="block px-4 py-2 hover:bg-gray-100">
-                    My Bookings
-                  </Link>
+                  <Link to="/my-bookings" className="block px-4 py-2 hover:bg-gray-100">My Bookings</Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Logout
                   </button>
@@ -165,21 +158,20 @@ const NavBar = () => {
             </div>
           )}
 
-          {/* Admin Dropdown */}
+          {/* === ADMIN DROPDOWN === */}
           {role === "admin" && (
             <div ref={dropdownRef} className="relative">
-              <div
+              <FaUserShield
                 title="Admin"
-                className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold cursor-pointer"
+                className="text-xl cursor-pointer"
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-              >
-                <FaUserShield className="text-lg" />
-              </div>
+              />
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
+                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100">Admin Dashboard</Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                   >
                     Logout
                   </button>
@@ -188,7 +180,7 @@ const NavBar = () => {
             </div>
           )}
 
-          {/* Login Button */}
+          {/* === LOGIN BUTTON === */}
           {!role && (
             <button
               onClick={() => setShowLogin(true)}
@@ -199,7 +191,7 @@ const NavBar = () => {
           )}
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* === MOBILE MENU ICON === */}
         <div className="flex md:hidden items-center gap-3">
           <img
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -210,7 +202,7 @@ const NavBar = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* === MOBILE SLIDE MENU === */}
       <div className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 transition-transform duration-500 ${
         isMenuOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
@@ -228,24 +220,6 @@ const NavBar = () => {
             {link.name}
           </button>
         ))}
-
-        {role === "admin" && (
-          <>
-            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-lg">
-              <FaUserShield />
-            </div>
-            <button
-              onClick={() => {
-                setIsMenuOpen(false);
-                navigate("/admin");
-              }}
-              className="border border-blue-600 text-blue-600 px-6 py-2 rounded-full hover:bg-blue-600 hover:text-white transition"
-            >
-              Dashboard
-            </button>
-          </>
-        )}
-
         {role === "user" && (
           <>
             <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold text-lg">
@@ -254,7 +228,12 @@ const NavBar = () => {
             <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>My Bookings</Link>
           </>
         )}
-
+        {role === "admin" && (
+          <>
+            <FaUserShield className="text-2xl" />
+            <Link to="/admin" onClick={() => setIsMenuOpen(false)}>Admin Dashboard</Link>
+          </>
+        )}
         {!role && (
           <button
             onClick={() => {
@@ -266,7 +245,6 @@ const NavBar = () => {
             Login
           </button>
         )}
-
         {role && (
           <button
             onClick={() => {
@@ -280,7 +258,7 @@ const NavBar = () => {
         )}
       </div>
 
-      {/* Modals */}
+      {/* === LOGIN / REGISTER MODALS === */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
@@ -295,7 +273,6 @@ const NavBar = () => {
           }}
         />
       )}
-
       {showRegister && (
         <Register
           onClose={() => setShowRegister(false)}
