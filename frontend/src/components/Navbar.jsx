@@ -36,6 +36,8 @@ const NavBar = ({ onLoginClick }) => {
 
     if (storedRole) {
       setRole(storedRole);
+    } else {
+      setRole("");
     }
 
     if (storedUser) {
@@ -46,12 +48,14 @@ const NavBar = ({ onLoginClick }) => {
         }
       } catch (err) {
         console.error("Error parsing stored user", err);
+        setFirstLetter("");
       }
+    } else {
+      setFirstLetter("");
     }
   };
 
   useEffect(() => {
-    // Scroll and dropdown setup
     const handleScroll = () => {
       const alwaysSolid =
         location.pathname.startsWith("/rooms") ||
@@ -69,17 +73,21 @@ const NavBar = ({ onLoginClick }) => {
       }
     };
 
+    const syncUserFromStorage = () => {
+      loadUserFromLocalStorage();
+    };
+
     loadUserFromLocalStorage();
     handleScroll();
 
     window.addEventListener("scroll", handleScroll);
     document.addEventListener("mousedown", handleClickOutside);
-    window.addEventListener("storage", loadUserFromLocalStorage);
+    window.addEventListener("storage", syncUserFromStorage);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("storage", loadUserFromLocalStorage);
+      window.removeEventListener("storage", syncUserFromStorage);
     };
   }, [location.pathname]);
 
@@ -127,7 +135,7 @@ const NavBar = ({ onLoginClick }) => {
         </button>
       </div>
 
-      {/* User section */}
+      {/* User Section */}
       <div className="hidden md:flex items-center gap-4 relative">
         <img
           src={assets.searchIcon}
@@ -178,7 +186,7 @@ const NavBar = ({ onLoginClick }) => {
         )}
       </div>
 
-      {/* Mobile */}
+      {/* Mobile Menu Icon */}
       <div className="flex items-center gap-3 md:hidden">
         <img
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -188,7 +196,7 @@ const NavBar = ({ onLoginClick }) => {
         />
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Drawer */}
       <div
         className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-all duration-500 ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
