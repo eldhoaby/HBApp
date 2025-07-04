@@ -23,7 +23,7 @@ const ListRooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/rooms'); // ✅ Your backend GET route
+      const res = await axios.get('http://localhost:3000/rooms');
       setRooms(res.data);
     } catch (err) {
       console.error('Error fetching rooms:', err);
@@ -54,9 +54,7 @@ const ListRooms = () => {
 
   return (
     <Box p={4}>
-      <Typography variant="h4" gutterBottom>
-        All Rooms
-      </Typography>
+      <Typography variant="h4" gutterBottom>All Rooms</Typography>
 
       {loading ? (
         <Box display="flex" justifyContent="center" mt={5}>
@@ -69,7 +67,7 @@ const ListRooms = () => {
               <TableRow>
                 <TableCell>Room Type</TableCell>
                 <TableCell>Price</TableCell>
-                <TableCell>Location</TableCell>
+                <TableCell>City</TableCell>
                 <TableCell>Hotel Name</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
@@ -79,8 +77,8 @@ const ListRooms = () => {
                 <TableRow key={room._id}>
                   <TableCell>{room.roomType}</TableCell>
                   <TableCell>₹{room.price}</TableCell>
-                  <TableCell>{room.location}</TableCell>
-                  <TableCell>{room.hotel?.name || 'N/A'}</TableCell>
+                  <TableCell>{room.city}</TableCell>
+                  <TableCell>{room.name}</TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleEdit(room._id)} color="primary">
                       <EditIcon />
@@ -93,9 +91,7 @@ const ListRooms = () => {
               ))}
               {rooms.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    No rooms available.
-                  </TableCell>
+                  <TableCell colSpan={5} align="center">No rooms available.</TableCell>
                 </TableRow>
               )}
             </TableBody>

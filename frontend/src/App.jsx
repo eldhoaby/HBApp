@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import NavBar from "./components/Navbar";
-import AdminNavbar from "./components/hotelOwner/AdminNavbar"; // ✅ Corrected import
-import Footer from "./components/Footer"; // ✅ Keep footer if used elsewhere
+import AdminNavbar from "./components/hotelOwner/AdminNavbar";
+import Footer from "./components/Footer";
 
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Admin from "./components/hotelOwner/Admin";
 
 import Home from "./pages/Home";
 import MyBookings from "./pages/MyBookings";
@@ -14,7 +13,9 @@ import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
-import Layout from "./pages/hotelOwner/Layout";
+
+// Admin layout with nested routes (dashboard, add room, list rooms)
+import Admin from "./components/hotelOwner/Admin";
 
 const App = () => {
   const location = useLocation();
@@ -43,21 +44,25 @@ const App = () => {
 
   return (
     <div>
+      {/* Show appropriate navbar */}
       {isAdminPath ? (
         <AdminNavbar />
       ) : (
         <NavBar onLoginClick={() => setShowLogin(true)} user={user} />
       )}
 
+      {/* Main content */}
       <div className="min-h-[70vh]">
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/admin/dashboard" element={<Layout />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/rooms" element={<AllRooms setUser={setUser} />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
+
+          {/* Auth Routes */}
           <Route
             path="/login"
             element={
@@ -76,9 +81,13 @@ const App = () => {
               />
             }
           />
+
+          {/* Admin Layout with nested routes inside Admin.jsx */}
+          <Route path="/admin/*" element={<Admin />} />
         </Routes>
       </div>
 
+      {/* Auth modals */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
@@ -89,7 +98,6 @@ const App = () => {
           }}
         />
       )}
-
       {showRegister && (
         <Register
           onClose={() => setShowRegister(false)}
@@ -97,6 +105,7 @@ const App = () => {
         />
       )}
 
+      {/* Footer only on non-admin routes */}
       {!isAdminPath && <Footer />}
     </div>
   );

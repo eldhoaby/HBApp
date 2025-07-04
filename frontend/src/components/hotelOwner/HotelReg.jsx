@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { assets, cities } from '../../assets/assets';
+import React, { useState, useEffect } from 'react';
+import { assets } from '../../assets/assets'; // make sure this path is correct
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const HotelReg = () => {
   const navigate = useNavigate();
+  const [cities, setCities] = useState([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -20,6 +21,18 @@ const HotelReg = () => {
     images: '',
     ownerImage: ''
   });
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/api/cities');
+        setCities(res.data);
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
+    };
+    fetchCities();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,7 +84,6 @@ const HotelReg = () => {
           className='w-1/2 rounded-xl hidden md:block object-cover'
         />
         <div className='relative flex flex-col items-center md:w-1/2 p-8 md:p-10 overflow-y-auto'>
-          {/* Close Button */}
           <img
             src={assets.closeIcon}
             alt="close-icon"
@@ -81,7 +93,7 @@ const HotelReg = () => {
 
           <p className='text-2xl font-semibold mt-6'>Register Your Hotel</p>
 
-          {[
+          {[ 
             { id: 'name', label: 'Hotel Name' },
             { id: 'phoneNumber', label: 'Phone Number' },
             { id: 'address', label: 'Address' },

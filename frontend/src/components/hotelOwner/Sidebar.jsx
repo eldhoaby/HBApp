@@ -1,35 +1,40 @@
-import React from 'react'
-import { assets } from '../../assets/assets'
-import { NavLink } from 'react-router-dom'
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { FaChartBar, FaPlus, FaList } from "react-icons/fa";
 
 const Sidebar = () => {
-  const sidebarLinks = [
-    { name: "Dashboard", path: "/admin", icon: assets.dashboardIcon },
-    { name: "Add Room", path: "/admin/add-room", icon: assets.addIcon },
-    { name: "List Room", path: "/admin/list-room", icon: assets.listIcon },
-  ]
+  const location = useLocation();
+
+  const menu = [
+    { name: "Dashboard", icon: <FaChartBar />, path: "/admin/dashboard" },
+    { name: "Add Room", icon: <FaPlus />, path: "/admin/add-room" },
+    { name: "List Room", icon: <FaList />, path: "/admin/list-room" },
+  ];
 
   return (
-    <div className='md:w-64 w-16 border-r h-full text-base border-gray-300 pt-4 flex flex-col transition-all duration-300'>
-      {sidebarLinks.map((item, index) => (
-        <NavLink
-          to={item.path}
-          key={index}
-          end='/owner'
-          className={({ isActive }) =>
-            `flex items-center py-3 px-4 md:px-8 gap-3 ${
-              isActive
-                ? "border-r-[6px] bg-blue-600/10 border-blue-600 text-blue-600"
-                : "hover:bg-gray-100/90 border-white text-gray-700"
-            }`
-          }
-        >
-          <img src={item.icon} alt={item.name} className='min-h-6 min-w-6' />
-          <p className='md:block hidden text-center'>{item.name}</p>
-        </NavLink>
-      ))}
-    </div>
-  )
-}
+    <div className="bg-white shadow-md h-screen p-4 w-64 fixed left-0 top-0">
+      <div className="text-2xl font-bold mb-8 text-indigo-600">QuickStay</div>
 
-export default Sidebar
+      <ul className="space-y-2">
+        {menu.map((item) => (
+          <li key={item.name}>
+            <Link
+              to={item.path}
+              className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 
+                ${
+                  location.pathname === item.path
+                    ? "bg-indigo-100 text-indigo-600 font-semibold"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+            >
+              <span className="mr-3">{item.icon}</span>
+              {item.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Sidebar;
