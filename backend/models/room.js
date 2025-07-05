@@ -28,7 +28,6 @@ const roomSchema = new mongoose.Schema({
   name: { type: String, required: true },
   city: { type: String, required: true },
   address: { type: String, required: true },
-  maxCount: { type: Number, required: true },
   phoneNumber: { type: String, required: true },
   amenities: { type: [String], required: true },
   price: { type: Number, required: true },
@@ -37,8 +36,8 @@ const roomSchema = new mongoose.Schema({
   images: { type: [String], required: true },
   roomType: { type: String, required: true },
   owner: {
-    name: String,
-    image: String
+    name: { type: String, default: "" },
+    image: { type: String, default: "" }
   }
 });
 

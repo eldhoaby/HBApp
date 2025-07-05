@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema({
   userId: {
-    type: String, // fine for now
+    type: String,
     required: true
   },
   hotel: {
@@ -11,17 +11,19 @@ const bookingSchema = new mongoose.Schema({
   },
   room: {
     roomType: String,
-    name: String,         // ✅ Add this
-    address: String,      // ✅ Add this
+    name: String,
+    address: String,
     images: [String],
-    amenities: [String],  // ✅ Add this
-    price: Number         // ✅ Add this
+    amenities: [String],
+    price: Number
   },
   checkInDate: String,
   checkOutDate: String,
   guests: Number,
   totalPrice: Number,
   isPaid: Boolean
+}, {
+  timestamps: true // ✅ Adds createdAt and updatedAt automatically
 });
 
 export default mongoose.model("Booking", bookingSchema);
