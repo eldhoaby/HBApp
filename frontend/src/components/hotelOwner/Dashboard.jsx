@@ -1,4 +1,3 @@
-// components/hotelOwner/Dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -10,14 +9,39 @@ const Dashboard = () => {
     recentBookings: []
   });
 
+  // useEffect(() => {
+  //   console.log("🔁 useEffect running - attempting to fetch metrics");
+
+  //   const fetchMetrics = async () => {
+  //     try {
+  //       const res = await axios.get('http://localhost:3000/admin/metrics');
+  //       console.log("✅ Metrics fetched:", res.data);
+  //       setMetrics(res.data);
+  //     } catch (err) {
+  //       console.error("❌ Error loading metrics:", err);
+  //     }
+  //   };
+
+  //   fetchMetrics();
+  // }, []);
   useEffect(() => {
-    axios.get('http://localhost:3000/admin/metrics')
-      .then(res => setMetrics(res.data))
-      .catch(err => console.error("Error loading metrics", err));
-  }, []);
+  const fetchMetrics = async () => {
+    try {
+      console.log("📡 Fetching metrics...");
+      const res = await axios.get('http://localhost:3000/admin/metrics');
+      console.log("✅ Metrics response:", res.data);
+      setMetrics(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching metrics:", err);
+    }
+  };
+
+  fetchMetrics();
+}, []);
+
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-6">
       {/* Top metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-blue-500 text-white rounded p-6 shadow">
@@ -54,11 +78,13 @@ const Dashboard = () => {
                   <td className="py-2 px-4">{b.roomName}</td>
                   <td className="py-2 px-4">₹{b.amount}</td>
                   <td className="py-2 px-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      b.status === 'Completed'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        b.status === 'Completed'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}
+                    >
                       {b.status}
                     </span>
                   </td>
@@ -66,7 +92,9 @@ const Dashboard = () => {
               ))
             ) : (
               <tr className="border-t">
-                <td className="py-3 px-4 text-gray-500" colSpan={4}>No bookings yet</td>
+                <td className="py-3 px-4 text-gray-500" colSpan={4}>
+                  No bookings yet
+                </td>
               </tr>
             )}
           </tbody>

@@ -1,44 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { assets } from '../../assets/assets'; // make sure this path is correct
+import React, { useState } from 'react';
+import { assets } from '../../assets/assets';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const amenityOptions = [
+  'WiFi', 'Pool', 'Breakfast', 'Parking', 'AC', 'TV',
+  'Fireplace', 'Balcony', 'Heater', 'Mountain View', 'Rooftop', 'Sea View'
+];
+
+const roomTypes = ['Single Bed', 'Double Bed', 'Luxury Room', 'Family Suite'];
+
 const HotelReg = () => {
   const navigate = useNavigate();
-  const [cities, setCities] = useState([]);
 
   const [formData, setFormData] = useState({
     name: '',
     city: '',
     address: '',
-    maxCount: '',
     phoneNumber: '',
-    amenities: '',
+    amenities: [],
     price: '',
     rating: '',
     reviewsCount: '',
     roomType: '',
-    images: '',
-    ownerImage: ''
+    imageUrls: ['', '', '', '', '']
   });
-
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const res = await axios.get('http://localhost:3000/api/cities');
-        setCities(res.data);
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-      }
-    };
-    fetchCities();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleImageChange = (index, value) => {
+    const updatedImages = [...formData.imageUrls];
+    updatedImages[index] = value;
+    setFormData(prev => ({ ...prev, imageUrls: updatedImages }));
+  };
+
+  const handleAmenityToggle = (amenity) => {
+    setFormData((prev) => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenity)
+        ? prev.amenities.filter((a) => a !== amenity)
+        : [...prev.amenities, amenity]
     }));
   };
 
@@ -51,15 +58,10 @@ const HotelReg = () => {
 
     const dataToSend = {
       ...formData,
-      maxCount: Number(formData.maxCount),
       price: Number(formData.price),
       rating: Number(formData.rating),
       reviewsCount: Number(formData.reviewsCount),
-      amenities: formData.amenities.split(',').map(item => item.trim()),
-      images: formData.images.split(',').map(url => url.trim()),
-      owner: {
-        image: formData.ownerImage
-      }
+      images: formData.imageUrls.filter(Boolean)
     };
 
     try {
@@ -78,12 +80,15 @@ const HotelReg = () => {
         onSubmit={handleSubmit}
         className='flex bg-white rounded-xl max-w-4xl w-full mx-4 my-10 md:my-20 overflow-y-auto max-h-[90vh]'
       >
+        {/* Image panel */}
         <img
           src={assets.regImage}
-          alt="reg-image"
+          alt="reg"
           className='w-1/2 rounded-xl hidden md:block object-cover'
         />
-        <div className='relative flex flex-col items-center md:w-1/2 p-8 md:p-10 overflow-y-auto'>
+
+        {/* Form panel */}
+        <div className='relative flex flex-col md:w-1/2 p-8 md:p-10 overflow-y-auto'>
           <img
             src={assets.closeIcon}
             alt="close-icon"
@@ -91,59 +96,91 @@ const HotelReg = () => {
             onClick={handleClose}
           />
 
-          <p className='text-2xl font-semibold mt-6'>Register Your Hotel</p>
+          <p className='text-2xl font-semibold mt-6 mb-4 text-center'>Register Your Hotel</p>
 
-          {[ 
+          {/* Basic info */}
+          {[
             { id: 'name', label: 'Hotel Name' },
             { id: 'phoneNumber', label: 'Phone Number' },
             { id: 'address', label: 'Address' },
-            { id: 'maxCount', label: 'Max Guests' },
+            { id: 'city', label: 'City' },
             { id: 'price', label: 'Price (per night)' },
             { id: 'rating', label: 'Rating (e.g. 4.5)' },
-            { id: 'reviewsCount', label: 'Reviews Count' },
-            { id: 'roomType', label: 'Room Type' },
-            { id: 'amenities', label: 'Amenities (comma-separated)' },
-            { id: 'images', label: 'Image URLs (comma-separated)' },
-            { id: 'ownerImage', label: 'Owner Image URL' }
+            { id: 'reviewsCount', label: 'Reviews Count' }
           ].map((field) => (
-            <div className='w-full mt-4' key={field.id}>
-              <label htmlFor={field.id} className="font-medium text-gray-500">{field.label}</label>
+            <div className='w-full mt-3' key={field.id}>
+              <label htmlFor={field.id} className="font-medium text-gray-600 text-sm">{field.label}</label>
               <input
                 id={field.id}
                 name={field.id}
                 type="text"
-                placeholder="Type Here"
+                placeholder="Type here..."
                 value={formData[field.id]}
                 onChange={handleChange}
-                className="border border-gray-200 rounded w-full px-3 py-2.5 mt-1 outline-indigo-500 font-light"
+                className="border border-gray-300 rounded w-full px-3 py-2 mt-1 outline-indigo-500 font-light focus:ring focus:ring-indigo-200"
                 required
               />
             </div>
           ))}
 
-          {/* City Dropdown */}
-          <div className='w-full mt-4 max-w-60 mr-auto'>
-            <label htmlFor="city" className="font-medium text-gray-500">City</label>
+          {/* Room Type Dropdown */}
+          <div className='w-full mt-4'>
+            <label htmlFor="roomType" className="font-medium text-gray-600 text-sm">Room Type</label>
             <select
-              id="city"
-              name="city"
-              value={formData.city}
+              id="roomType"
+              name="roomType"
+              value={formData.roomType}
               onChange={handleChange}
-              className='border border-gray-200 rounded w-full px-3 py-2.5 mt-1 outline-indigo-500 font-light'
+              className="border border-gray-300 rounded w-full px-3 py-2 mt-1 outline-indigo-500 font-light focus:ring focus:ring-indigo-200"
               required
             >
-              <option value="">Select City</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>{city}</option>
+              <option value="">Select Room Type</option>
+              {roomTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
               ))}
             </select>
           </div>
 
+          {/* Amenities */}
+          <div className='w-full mt-6'>
+            <label className="font-medium text-gray-600 text-sm">Amenities</label>
+            <div className='grid grid-cols-2 gap-x-4 gap-y-2 mt-2'>
+              {amenityOptions.map((amenity) => (
+                <label key={amenity} className="flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={formData.amenities.includes(amenity)}
+                    onChange={() => handleAmenityToggle(amenity)}
+                    className="accent-indigo-500"
+                  />
+                  <span>{amenity}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Image URLs */}
+          <div className='w-full mt-6'>
+            <label className="font-medium text-gray-600 text-sm">Hotel Image URLs</label>
+            {formData.imageUrls.map((url, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder={`Image URL ${index + 1}`}
+                value={url}
+                onChange={(e) => handleImageChange(index, e.target.value)}
+                className="border border-gray-300 rounded w-full px-3 py-2 mt-2 outline-indigo-500 font-light focus:ring focus:ring-indigo-200"
+                required={index === 0}
+              />
+            ))}
+          </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
-            className='bg-indigo-500 hover:bg-indigo-600 transition-all text-white mr-auto px-6 py-2 rounded cursor-pointer mt-6'
+            className='bg-indigo-500 hover:bg-indigo-600 transition-all text-white font-medium px-6 py-2 rounded mt-6 self-start'
           >
-            Register
+            Register Hotel
           </button>
         </div>
       </form>

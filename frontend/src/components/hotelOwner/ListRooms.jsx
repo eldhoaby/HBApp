@@ -21,17 +21,20 @@ const ListRooms = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch all rooms from backend
   const fetchRooms = async () => {
-    try {
-      const res = await axios.get('http://localhost:3000/rooms');
-      setRooms(res.data);
-    } catch (err) {
-      console.error('Error fetching rooms:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await axios.get('http://localhost:3000/rooms');
+    console.log("✅ Rooms fetched:", res.data); // <--- ADD THIS LINE
+    setRooms(res.data);
+  } catch (err) {
+    console.error('❌ Error fetching rooms:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
+  // Delete room
   const handleDelete = async (id) => {
     const confirm = window.confirm("Are you sure you want to delete this room?");
     if (!confirm) return;
@@ -40,10 +43,11 @@ const ListRooms = () => {
       await axios.delete(`http://localhost:3000/rooms/${id}`);
       setRooms((prev) => prev.filter((room) => room._id !== id));
     } catch (err) {
-      console.error("Error deleting room:", err);
+      console.error("❌ Error deleting room:", err);
     }
   };
 
+  // Go to edit room page
   const handleEdit = (id) => {
     navigate(`/admin/edit-room/${id}`);
   };
@@ -54,49 +58,52 @@ const ListRooms = () => {
 
   return (
     <Box p={4}>
-      <Typography variant="h4" gutterBottom>All Rooms</Typography>
+      <Typography variant="h4" gutterBottom>All Hotel Rooms</Typography>
 
       {loading ? (
         <Box display="flex" justifyContent="center" mt={5}>
           <CircularProgress />
         </Box>
+      ) : rooms.length === 0 ? (
+        <Box mt={5} textAlign="center">
+          <Typography variant="h6" color="textSecondary">
+            ⚠️ No rooms found in the system.
+          </Typography>
+        </Box>
       ) : (
-        <Paper elevation={3}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Room Type</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell>City</TableCell>
-                <TableCell>Hotel Name</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rooms.map((room) => (
-                <TableRow key={room._id}>
-                  <TableCell>{room.roomType}</TableCell>
-                  <TableCell>₹{room.price}</TableCell>
-                  <TableCell>{room.city}</TableCell>
-                  <TableCell>{room.name}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleEdit(room._id)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(room._id)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {rooms.length === 0 && (
+        <Box overflow="auto" mt={2}>
+          <Paper elevation={3}>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={5} align="center">No rooms available.</TableCell>
+                  <TableCell><strong>Hotel Name</strong></TableCell>
+                  <TableCell><strong>Room Type</strong></TableCell>
+                  <TableCell><strong>City</strong></TableCell>
+                  <TableCell><strong>Price (₹)</strong></TableCell>
+                  <TableCell><strong>Actions</strong></TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Paper>
+              </TableHead>
+              <TableBody>
+                {rooms.map((room) => (
+                  <TableRow key={room._id}>
+                    <TableCell>{room.name || 'N/A'}</TableCell>
+                    <TableCell>{room.roomType || 'N/A'}</TableCell>
+                    <TableCell>{room.city || 'N/A'}</TableCell>
+                    <TableCell>{room.price ? `₹${room.price}` : 'N/A'}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEdit(room._id)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(room._id)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+        </Box>
       )}
     </Box>
   );
