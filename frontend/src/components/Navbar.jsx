@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { FaUserShield } from "react-icons/fa";
-import Login from "../components/Login";
-import Register from "../components/Register";
+import Login from "./Login";
+import Register from "./Register";
+import adminIcon from "../assets/adminIcon.png";
 
 const NavBar = () => {
   const location = useLocation();
@@ -54,7 +55,9 @@ const NavBar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const solidPaths = ["/rooms", "/my-bookings", "/payment", "/confirmation"];
-      const isSolid = solidPaths.some((p) => location.pathname.startsWith(p)) || location.pathname.startsWith("/admin");
+      const isSolid =
+        solidPaths.some((p) => location.pathname.startsWith(p)) ||
+        location.pathname.startsWith("/admin");
       setIsScrolled(window.scrollY > 10 || isSolid);
     };
 
@@ -89,15 +92,19 @@ const NavBar = () => {
   return (
     <>
       {/* === MAIN NAV === */}
-      <nav className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 ${
-        isScrolled ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4" : "py-4 md:py-6"
-      }`}>
+      <nav
+        className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 ${
+          isScrolled
+            ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4"
+            : "py-4 md:py-6 text-white"
+        }`}
+      >
         {/* === LOGO === */}
         <Link to="/">
           <img
             src={assets.logo}
             alt="logo"
-            className={`h-9 ${isScrolled && "invert opacity-80"}`}
+            className={`h-9 ${isScrolled ? "invert opacity-80" : ""}`}
           />
         </Link>
 
@@ -106,24 +113,21 @@ const NavBar = () => {
           {navLinks.map((link, i) => (
             <button
               key={i}
-              onClick={() => {
-                link.path ? navigate(link.path) : handleScrollTo(link.scrollTo);
-              }}
+              onClick={() =>
+                link.path ? navigate(link.path) : handleScrollTo(link.scrollTo)
+              }
               className={`group flex flex-col gap-0.5 ${
                 isScrolled ? "text-gray-700" : "text-white"
               }`}
             >
               {link.name}
-              <div className={`h-0.5 w-0 group-hover:w-full transition-all duration-300 ${
-                isScrolled ? "bg-gray-700" : "bg-white"
-              }`} />
+              <div
+                className={`h-0.5 w-0 group-hover:w-full transition-all duration-300 ${
+                  isScrolled ? "bg-gray-700" : "bg-white"
+                }`}
+              />
             </button>
           ))}
-          <button className={`border px-4 py-1 text-sm font-light rounded-full ${
-            isScrolled ? "text-black" : "text-white"
-          }`}>
-            Dashboard
-          </button>
         </div>
 
         {/* === RIGHT PROFILE ICONS === */}
@@ -131,7 +135,7 @@ const NavBar = () => {
           <img
             src={assets.searchIcon}
             alt="search"
-            className={`h-7 ${isScrolled && "invert"}`}
+            className={`h-7 ${isScrolled ? "invert" : ""}`}
           />
 
           {/* === USER DROPDOWN === */}
@@ -146,7 +150,9 @@ const NavBar = () => {
               </div>
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
-                  <Link to="/my-bookings" className="block px-4 py-2 hover:bg-gray-100">My Bookings</Link>
+                  <Link to="/my-bookings" className="block px-4 py-2 hover:bg-gray-100">
+                    My Bookings
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
@@ -161,14 +167,17 @@ const NavBar = () => {
           {/* === ADMIN DROPDOWN === */}
           {role === "admin" && (
             <div ref={dropdownRef} className="relative">
-              <FaUserShield
-                title="Admin"
-                className="text-xl cursor-pointer"
+              <img
+                src={adminIcon}
+                alt="Admin"
+                className="h-9 w-9 rounded-full border cursor-pointer hover:scale-105 transition"
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
               />
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
-                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100">Admin Dashboard</Link>
+                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100">
+                    Admin Dashboard
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
@@ -180,7 +189,7 @@ const NavBar = () => {
             </div>
           )}
 
-          {/* === LOGIN BUTTON === */}
+          {/* === LOGIN === */}
           {!role && (
             <button
               onClick={() => setShowLogin(true)}
@@ -197,16 +206,21 @@ const NavBar = () => {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             src={assets.menuIcon}
             alt="menu"
-            className={`${isScrolled && "invert"} h-4`}
+            className={`h-4 ${isScrolled ? "invert" : ""}`}
           />
         </div>
       </nav>
 
       {/* === MOBILE SLIDE MENU === */}
-      <div className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 transition-transform duration-500 ${
-        isMenuOpen ? "translate-x-0" : "-translate-x-full"
-      }`}>
-        <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)}>
+      <div
+        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 transition-transform duration-500 ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <button
+          className="absolute top-4 right-4"
+          onClick={() => setIsMenuOpen(false)}
+        >
           <img src={assets.closeIcon} alt="close" className="h-6.5" />
         </button>
         {navLinks.map((link, i) => (
@@ -225,13 +239,17 @@ const NavBar = () => {
             <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold text-lg">
               {firstLetter || "U"}
             </div>
-            <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>My Bookings</Link>
+            <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>
+              My Bookings
+            </Link>
           </>
         )}
         {role === "admin" && (
           <>
-            <FaUserShield className="text-2xl" />
-            <Link to="/admin" onClick={() => setIsMenuOpen(false)}>Admin Dashboard</Link>
+            <img src={adminIcon} alt="admin" className="h-10 w-10 rounded-full border" />
+            <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
+              Admin Dashboard
+            </Link>
           </>
         )}
         {!role && (
@@ -258,7 +276,7 @@ const NavBar = () => {
         )}
       </div>
 
-      {/* === LOGIN / REGISTER MODALS === */}
+      {/* === MODALS === */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
