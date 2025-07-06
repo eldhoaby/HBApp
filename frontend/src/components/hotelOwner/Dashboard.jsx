@@ -146,10 +146,24 @@ const Dashboard = () => {
     try {
       await axios.put(`http://localhost:3000/bookings/${bookingId}`, { status: "Cancelled by Admin" });
       alert("✅ Booking cancelled successfully!");
-      fetchMetrics(); // Refresh after update
+      fetchMetrics(); // Refresh dashboard data
     } catch (error) {
       console.error("❌ Error cancelling booking:", error);
       alert("Failed to cancel booking.");
+    }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    const confirm = window.confirm("Are you sure you want to delete this booking permanently?");
+    if (!confirm) return;
+
+    try {
+      await axios.delete(`http://localhost:3000/bookings/${bookingId}`);
+      alert("🗑️ Booking deleted successfully!");
+      fetchMetrics(); // Refresh dashboard data
+    } catch (error) {
+      console.error("❌ Error deleting booking:", error);
+      alert("Failed to delete booking.");
     }
   };
 
@@ -182,7 +196,7 @@ const Dashboard = () => {
               <th className="py-2 px-4 font-medium">Room</th>
               <th className="py-2 px-4 font-medium">Amount</th>
               <th className="py-2 px-4 font-medium">Status</th>
-              <th className="py-2 px-4 font-medium">Action</th>
+              <th className="py-2 px-4 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -206,17 +220,23 @@ const Dashboard = () => {
                       {b.status}
                     </span>
                   </td>
-                  <td className="py-2 px-4">
+                  <td className="py-2 px-4 space-x-2">
                     {b.status === "Cancelled by Admin" ? (
                       <span className="text-red-600 font-semibold text-xs">Cancelled</span>
                     ) : (
                       <button
                         onClick={() => handleCancelBooking(b._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
                       >
                         Cancel
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDeleteBooking(b._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
