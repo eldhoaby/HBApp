@@ -1,3 +1,4 @@
+
 // import React, { useEffect, useState } from "react";
 // import Title from "../components/Title";
 // import { assets } from "../assets/assets";
@@ -35,16 +36,20 @@
 //     }
 //   }, []);
 
+//   // Updated: Change booking status to "Cancelled by Admin" instead of deleting
 //   const handleRemove = async (bookingId) => {
-//     const confirmDelete = window.confirm("Are you sure you want to remove this booking?");
-//     if (!confirmDelete) return;
+//     const confirmCancel = window.confirm("Are you sure you want to cancel this booking?");
+//     if (!confirmCancel) return;
 
 //     try {
-//       await axios.delete(`http://localhost:3000/bookings/${bookingId}`);
-//       setBookings((prev) => prev.filter((b) => b._id !== bookingId));
+//       await axios.put(`http://localhost:3000/bookings/${bookingId}`, { status: "Cancelled by Admin" });
+//       setBookings((prev) =>
+//         prev.map((b) => (b._id === bookingId ? { ...b, status: "Cancelled by Admin" } : b))
+//       );
+//       alert("Booking cancelled by admin.");
 //     } catch (err) {
-//       console.error("Failed to delete booking", err);
-//       alert("❌ Failed to remove booking.");
+//       console.error("Failed to cancel booking", err);
+//       alert("❌ Failed to cancel booking.");
 //     }
 //   };
 
@@ -117,32 +122,38 @@
 //             </div>
 
 //             <div className="flex flex-col items-start justify-center pt-3 gap-2">
-//               <div className="flex items-center gap-2">
-//                 <div
-//                   className={`h-3 w-3 rounded-full ${
-//                     booking.isPaid ? "bg-green-500" : "bg-red-500"
-//                   }`}
-//                 ></div>
-//                 <p className={`text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`}>
-//                   {booking.isPaid ? "Paid" : "Unpaid"}
-//                 </p>
-//               </div>
+//               {booking.status === "Cancelled by Admin" ? (
+//                 <p className="text-red-600 font-semibold">Booking cancelled by admin.</p>
+//               ) : (
+//                 <>
+//                   <div className="flex items-center gap-2">
+//                     <div
+//                       className={`h-3 w-3 rounded-full ${
+//                         booking.isPaid ? "bg-green-500" : "bg-red-500"
+//                       }`}
+//                     ></div>
+//                     <p className={`text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`}>
+//                       {booking.isPaid ? "Paid" : "Unpaid"}
+//                     </p>
+//                   </div>
 
-//               {!booking.isPaid && (
-//                 <button
-//                   className="px-4 py-1.5 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all"
-//                   onClick={() => handlePayNow(booking)}
-//                 >
-//                   Pay Now
-//                 </button>
+//                   {!booking.isPaid && (
+//                     <button
+//                       className="px-4 py-1.5 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all"
+//                       onClick={() => handlePayNow(booking)}
+//                     >
+//                       Pay Now
+//                     </button>
+//                   )}
+
+//                   <button
+//                     className="px-4 py-1.5 text-xs text-red-600 border border-red-400 rounded-full hover:bg-red-50 transition-all"
+//                     onClick={() => handleRemove(booking._id)}
+//                   >
+//                     Cancel Booking
+//                   </button>
+//                 </>
 //               )}
-
-//               <button
-//                 className="px-4 py-1.5 text-xs text-red-600 border border-red-400 rounded-full hover:bg-red-50 transition-all"
-//                 onClick={() => handleRemove(booking._id)}
-//               >
-//                 Remove
-//               </button>
 //             </div>
 //           </div>
 //         ))}
@@ -156,6 +167,8 @@
 // };
 
 // export default MyBookings;
+
+
 import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
@@ -193,17 +206,22 @@ const MyBookings = () => {
     }
   }, []);
 
-  // Updated: Change booking status to "Cancelled by Admin" instead of deleting
   const handleRemove = async (bookingId) => {
     const confirmCancel = window.confirm("Are you sure you want to cancel this booking?");
     if (!confirmCancel) return;
 
     try {
-      await axios.put(`http://localhost:3000/bookings/${bookingId}`, { status: "Cancelled by Admin" });
+      await axios.put(`http://localhost:3000/bookings/${bookingId}`, {
+        status: "Cancelled by User",
+      });
+
       setBookings((prev) =>
-        prev.map((b) => (b._id === bookingId ? { ...b, status: "Cancelled by Admin" } : b))
+        prev.map((b) =>
+          b._id === bookingId ? { ...b, status: "Cancelled by User" } : b
+        )
       );
-      alert("Booking cancelled by admin.");
+
+      alert("Booking cancelled successfully.");
     } catch (err) {
       console.error("Failed to cancel booking", err);
       alert("❌ Failed to cancel booking.");
@@ -247,7 +265,10 @@ const MyBookings = () => {
               <div className="flex flex-col gap-1.5 max-md:mt-3 min-md:ml-4">
                 <p className="font-playfair text-2xl">
                   {booking.hotel?.name}
-                  <span className="font-inter text-sm"> ({booking.room?.roomType})</span>
+                  <span className="font-inter text-sm">
+                    {" "}
+                    ({booking.room?.roomType})
+                  </span>
                 </p>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
                   <img src={assets.locationIcon} alt="Location icon" />
@@ -280,7 +301,13 @@ const MyBookings = () => {
 
             <div className="flex flex-col items-start justify-center pt-3 gap-2">
               {booking.status === "Cancelled by Admin" ? (
-                <p className="text-red-600 font-semibold">Booking cancelled by admin.</p>
+                <p className="text-red-600 font-semibold">
+                  Booking cancelled by admin.
+                </p>
+              ) : booking.status === "Cancelled by User" ? (
+                <p className="text-red-600 font-semibold">
+                  Booking cancelled by you.
+                </p>
               ) : (
                 <>
                   <div className="flex items-center gap-2">
@@ -289,7 +316,11 @@ const MyBookings = () => {
                         booking.isPaid ? "bg-green-500" : "bg-red-500"
                       }`}
                     ></div>
-                    <p className={`text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`}>
+                    <p
+                      className={`text-sm ${
+                        booking.isPaid ? "text-green-500" : "text-red-500"
+                      }`}
+                    >
                       {booking.isPaid ? "Paid" : "Unpaid"}
                     </p>
                   </div>
