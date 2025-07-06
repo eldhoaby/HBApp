@@ -3,29 +3,42 @@ import axios from 'axios';
 
 const Dashboard = () => {
   const [metrics, setMetrics] = useState({
-  totalBookings: 0,
-  totalRevenue: 0,
-  pendingBookings: 0,
-  bookings: []  // ✅ store all bookings
-});
-
+    totalBookings: 0,
+    totalRevenue: 0,
+    pendingBookings: 0,
+    bookings: []
+  });
 
   useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const res = await axios.get('http://localhost:3000/admin/metrics');
-        setMetrics(res.data);
-      } catch (err) {
-        console.error("❌ Error fetching metrics:", err);
-      }
-    };
-
     fetchMetrics();
   }, []);
 
+  const fetchMetrics = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/admin/metrics');
+      setMetrics(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching metrics:", err);
+    }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    const confirm = window.confirm("Are you sure you want to delete this booking?");
+    if (!confirm) return;
+
+    try {
+      await axios.delete(`http://localhost:3000/bookings/${bookingId}`);
+      alert("✅ Booking deleted successfully!");
+      fetchMetrics(); // Refresh data after deletion
+    } catch (error) {
+      console.error("❌ Error deleting booking:", error);
+      alert("Failed to delete booking.");
+    }
+  };
+
   return (
     <div className="space-y-6 px-4 py-6">
-      {/* Top Summary Cards */}
+      {/* Top metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-blue-500 text-white rounded p-6 shadow">
           <h3 className="text-lg font-medium">Total Bookings</h3>
@@ -41,7 +54,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Bookings Table */}
+      {/* All Bookings Table */}
       <div className="bg-white rounded shadow p-4 mt-6 overflow-x-auto">
         <h2 className="text-lg font-semibold mb-3">All Bookings</h2>
         <table className="w-full text-left">
@@ -52,38 +65,45 @@ const Dashboard = () => {
               <th className="py-2 px-4 font-medium">Room</th>
               <th className="py-2 px-4 font-medium">Amount</th>
               <th className="py-2 px-4 font-medium">Status</th>
+              <th className="py-2 px-4 font-medium">Action</th>
             </tr>
           </thead>
           <tbody>
-            {metrics.bookings.length > 0 ? (
-  metrics.bookings.map((b, idx) => (
-    <tr key={idx} className="border-t">
-      <td className="py-2 px-4">{b.userName}</td>
-      <td className="py-2 px-4">{b.phone}</td>
-      <td className="py-2 px-4">{b.roomName}</td>
-      <td className="py-2 px-4">₹{b.amount}</td>
-      <td className="py-2 px-4">
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            b.status === 'Completed'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-yellow-100 text-yellow-700'
-          }`}
-        >
-          {b.status}
-        </span>
-      </td>
-    </tr>
-  ))
-) : (
-  <tr className="border-t">
-    <td className="py-3 px-4 text-gray-500" colSpan={5}>
-      No bookings yet
-    </td>
-  </tr>
-)}
-
-     
+            {metrics.bookings && metrics.bookings.length > 0 ? (
+              metrics.bookings.map((b, idx) => (
+                <tr key={idx} className="border-t">
+                  <td className="py-2 px-4">{b.userName}</td>
+                  <td className="py-2 px-4">{b.phone}</td>
+                  <td className="py-2 px-4">{b.roomName}</td>
+                  <td className="py-2 px-4">₹{b.amount}</td>
+                  <td className="py-2 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        b.status === 'Completed'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                      }`}
+                    >
+                      {b.status}
+                    </span>
+                  </td>
+                  <td className="py-2 px-4">
+                    <button
+                      onClick={() => handleDeleteBooking(b._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr className="border-t">
+                <td className="py-3 px-4 text-gray-500" colSpan={6}>
+                  No bookings found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

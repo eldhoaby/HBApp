@@ -20,18 +20,38 @@ const ListRooms = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  
   const fetchRooms = async () => {
-    try {
-      const res = await axios.get('http://localhost:3000/rooms');
-      console.log("✅ Rooms fetched:", res.data);
-      setRooms(res.data);
-    } catch (err) {
-      console.error("❌ Error fetching rooms:", err);
-    } finally {
-      setLoading(false);
+  try {
+    const res = await axios.get('http://localhost:3000/rooms');
+    console.log("✅ Rooms fetched:", res.data);
+
+    if (!Array.isArray(res.data)) {
+      alert("Rooms response is not an array");
+    } else if (res.data.length === 0) {
+      alert("⚠️ No rooms found from API");
     }
-  };
+
+    setRooms(res.data);
+  } catch (err) {
+    console.error("❌ Error fetching rooms:", err);
+    alert("Error fetching rooms");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // const fetchRooms = async () => {
+  //   try {
+  //     const res = await axios.get('http://localhost:3000/rooms');
+  //     console.log("✅ Rooms fetched:", res.data);
+  //     setRooms(res.data);
+  //   } catch (err) {
+  //     console.error("❌ Error fetching rooms:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleDelete = async (id) => {
     const confirm = window.confirm("Are you sure you want to delete this room?");
@@ -91,10 +111,10 @@ const ListRooms = () => {
                     <TableCell>{room.price ? `₹${room.price}` : 'N/A'}</TableCell>
                     <TableCell>
                       <IconButton onClick={() => handleEdit(room._id)} color="primary">
-                        <EditIcon />
+                        <EditIcon sx={{ width: 24, height: 24 }} />
                       </IconButton>
                       <IconButton onClick={() => handleDelete(room._id)} color="error">
-                        <DeleteIcon />
+                        <DeleteIcon sx={{ width: 24, height: 24 }} />
                       </IconButton>
                     </TableCell>
                   </TableRow>
