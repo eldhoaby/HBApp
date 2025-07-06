@@ -16,8 +16,8 @@ const Confirmation = () => {
   }
 
   const {
-    room,
-    hotel,
+    room = {},
+    hotel = {},
     checkInDate,
     checkOutDate,
     guests,
@@ -36,10 +36,10 @@ const Confirmation = () => {
     doc.text("Booking Confirmation", 20, 35);
 
     doc.setFontSize(12);
-    doc.text(`Hotel: ${hotel?.name || room?.name}`, 20, 50);
-    doc.text(`Room Type: ${room.roomType}`, 20, 60);
-    doc.text(`Check-In: ${new Date(checkInDate).toDateString()}`, 20, 70);
-    doc.text(`Check-Out: ${new Date(checkOutDate).toDateString()}`, 20, 80);
+    doc.text(`Hotel: ${hotel.name || room.name || "N/A"}`, 20, 50);
+    doc.text(`Room Type: ${room.roomType || "Standard"}`, 20, 60);
+    doc.text(`Check-In: ${new Date(checkInDate).toLocaleDateString("en-IN")}`, 20, 70);
+    doc.text(`Check-Out: ${new Date(checkOutDate).toLocaleDateString("en-IN")}`, 20, 80);
     doc.text(`Guests: ${guests}`, 20, 90);
     doc.text(`Total Paid: ₹${totalPrice}`, 20, 100);
     doc.text(`Status: ${isPaid ? 'Paid' : 'Unpaid'}`, 20, 110);
@@ -67,11 +67,11 @@ const Confirmation = () => {
 
         <div className="bg-gray-50 rounded-lg px-6 py-4 border border-gray-200">
           <div className="text-base space-y-2 text-gray-800">
-            <p><strong>🏨 Hotel:</strong> {hotel?.name || room?.name}</p>
-            <p><strong>🛏️ Room Type:</strong> {room.roomType}</p>
-            <p><strong>📍 Address:</strong> {hotel?.address || 'N/A'}</p>
-            <p><strong>📅 Check-in:</strong> {new Date(checkInDate).toDateString()}</p>
-            <p><strong>📅 Check-out:</strong> {new Date(checkOutDate).toDateString()}</p>
+            <p><strong>🏨 Hotel:</strong> {hotel.name || room.name}</p>
+            <p><strong>🛏️ Room Type:</strong> {room.roomType || "Standard"}</p>
+            <p><strong>📍 Address:</strong> {hotel.address || "N/A"}</p>
+            <p><strong>📅 Check-in:</strong> {new Date(checkInDate).toLocaleDateString("en-IN")}</p>
+            <p><strong>📅 Check-out:</strong> {new Date(checkOutDate).toLocaleDateString("en-IN")}</p>
             <p><strong>👤 Guests:</strong> {guests}</p>
             <p><strong>💰 Total Paid:</strong> ₹{totalPrice}</p>
             <p><strong>🧾 Status:</strong> {isPaid ? '✅ Paid' : '❌ Unpaid'}</p>

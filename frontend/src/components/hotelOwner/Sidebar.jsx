@@ -6,14 +6,15 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menu = [
-    { name: "Dashboard", icon: <FaChartBar />, path: "/admin/dashboard" },
-    { name: "Add Room", icon: <FaPlus />, path: "/admin/add-room" },
-    { name: "List Room", icon: <FaList />, path: "/admin/list-room" },
-  ];
+  { name: "Dashboard", icon: <FaChartBar />, path: "/admin/dashboard" },
+  { name: "Add Room", icon: <FaPlus />, path: "/admin/add-room" },
+  { name: "List Rooms", icon: <FaList />, path: "/admin/list-rooms" },  // updated here
+];
+
 
   return (
     <div className="bg-white shadow-md h-screen p-4 w-64 fixed left-0 top-0">
-      <div className="text-2xl font-bold mb-8 text-indigo-600">QuickStay</div>
+      <div className="text-2xl font-bold mb-8 text-indigo-600">HomyStay</div>
 
       <ul className="space-y-2">
         {menu.map((item) => (

@@ -109,7 +109,7 @@ const App = () => {
       )}
 
       {/* Footer only for non-admin pages */}
-      {!isAdminPath && <Footer />}
+      {/* <Footer /> */}
     </div>
   );
 };

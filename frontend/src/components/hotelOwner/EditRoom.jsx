@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { assets } from '../../assets/assets';
 
 const amenityOptions = [
@@ -10,8 +10,9 @@ const amenityOptions = [
 
 const roomTypes = ['Single Bed', 'Double Bed', 'Luxury Room', 'Family Suite'];
 
-const HotelReg = () => {
+const EditRoom = () => {
   const navigate = useNavigate();
+  const { id } = useParams();  // room id from URL param
 
   const [formData, setFormData] = useState({
     name: '',
@@ -23,8 +24,42 @@ const HotelReg = () => {
     rating: '',
     reviewsCount: '',
     roomType: '',
-    imageSources: ['', '', '', '']  // URLs only now
+    imageSources: ['', '', '', '']
   });
+
+  const [loading, setLoading] = useState(true);
+
+  // Fetch room data on mount
+  useEffect(() => {
+    const fetchRoom = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/rooms/${id}`);
+        const room = res.data;
+
+        setFormData({
+          name: room.name || '',
+          city: room.city || '',
+          address: room.address || '',
+          phoneNumber: room.phoneNumber || '',
+          amenities: room.amenities || [],
+          price: room.price?.toString() || '',
+          rating: room.rating?.toString() || '',
+          reviewsCount: room.reviewsCount?.toString() || '',
+          roomType: room.roomType || '',
+          imageSources: (room.images && room.images.length > 0)
+            ? [...room.images, '', '', '', ''].slice(0, 4)  // max 4 URLs
+            : ['', '', '', '']
+        });
+      } catch (error) {
+        console.error("Error fetching room:", error);
+        alert("Failed to load room data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoom();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +81,7 @@ const HotelReg = () => {
     setFormData(prev => ({ ...prev, imageSources: updated }));
   };
 
-  const handleClose = () => navigate('/admin/dashboard');
+  const handleClose = () => navigate('/admin/list-rooms');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,14 +94,18 @@ const HotelReg = () => {
     };
 
     try {
-      await axios.post('http://localhost:3000/rooms', dataToSend);
-      alert("Hotel registered successfully!");
-      navigate("/admin/dashboard");
+      await axios.put(`http://localhost:3000/rooms/${id}`, dataToSend);
+      alert("Room updated successfully!");
+      navigate("/admin/list-rooms");
     } catch (error) {
-      console.error("Error registering hotel:", error);
-      alert("Error registering hotel");
+      console.error("Error updating room:", error);
+      alert("Error updating room");
     }
   };
+
+  if (loading) {
+    return <div className="p-8 text-center">Loading room details...</div>;
+  }
 
   return (
     <div className='fixed top-0 left-0 right-0 bottom-0 bg-black/70 z-50 flex justify-center items-center overflow-y-auto'>
@@ -85,7 +124,7 @@ const HotelReg = () => {
             className='absolute top-4 right-4 w-5 h-5 cursor-pointer'
             onClick={handleClose}
           />
-          <p className='text-2xl font-semibold mt-6 mb-4 text-center'>Register Your Hotel</p>
+          <p className='text-2xl font-semibold mt-6 mb-4 text-center'>Edit Room Details</p>
 
           {/* Fields */}
           {[
@@ -182,7 +221,7 @@ const HotelReg = () => {
             type="submit"
             className='bg-indigo-500 hover:bg-indigo-600 transition-all text-white font-medium px-6 py-2 rounded mt-6 self-start'
           >
-            Register Hotel
+            Update Room
           </button>
         </div>
       </form>
@@ -190,4 +229,4 @@ const HotelReg = () => {
   );
 };
 
-export default HotelReg;
+export default EditRoom;

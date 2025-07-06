@@ -13,20 +13,32 @@ const MyBookings = () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const userId = storedUser?._id;
 
-      if (!userId) return;
+      if (!userId) {
+        navigate("/login");
+        return;
+      }
 
       const res = await axios.get(`http://localhost:3000/bookings/user/${userId}`);
       setBookings(res.data);
+      console.log("Bookings fetched:", res.data);
     } catch (err) {
       console.error("Failed to fetch bookings", err);
     }
   };
 
   useEffect(() => {
-    fetchBookings();
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser || !storedUser._id) {
+      navigate("/login");
+    } else {
+      fetchBookings();
+    }
   }, []);
 
   const handleRemove = async (bookingId) => {
+    const confirmDelete = window.confirm("Are you sure you want to remove this booking?");
+    if (!confirmDelete) return;
+
     try {
       await axios.delete(`http://localhost:3000/bookings/${bookingId}`);
       setBookings((prev) => prev.filter((b) => b._id !== bookingId));
@@ -65,7 +77,8 @@ const MyBookings = () => {
           >
             <div className="flex flex-col md:flex-row">
               <img
-                src={booking.room?.images?.[0]}
+                src={booking.room?.images?.[0] || assets.defaultRoomImage}
+                onError={(e) => (e.target.src = assets.defaultRoomImage)}
                 alt="hotel-img"
                 className="min-md:w-44 rounded shadow object-cover h-28 w-44"
               />
@@ -75,14 +88,16 @@ const MyBookings = () => {
                   <span className="font-inter text-sm"> ({booking.room?.roomType})</span>
                 </p>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <img src={assets.locationIcon} alt="location-icon" />
+                  <img src={assets.locationIcon} alt="Location icon" />
                   <span>{booking.hotel?.address}</span>
                 </div>
                 <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <img src={assets.guestsIcon} alt="guests-icon" />
+                  <img src={assets.guestsIcon} alt="Guests icon" />
                   <span>Guests: {booking.guests}</span>
                 </div>
-                <p className="text-base font-medium">Total: ₹{booking.totalPrice}</p>
+                <p className="text-base font-medium">
+                  Total: ₹{booking.totalPrice?.toLocaleString("en-IN")}
+                </p>
               </div>
             </div>
 
@@ -104,7 +119,9 @@ const MyBookings = () => {
             <div className="flex flex-col items-start justify-center pt-3 gap-2">
               <div className="flex items-center gap-2">
                 <div
-                  className={`h-3 w-3 rounded-full ${booking.isPaid ? "bg-green-500" : "bg-red-500"}`}
+                  className={`h-3 w-3 rounded-full ${
+                    booking.isPaid ? "bg-green-500" : "bg-red-500"
+                  }`}
                 ></div>
                 <p className={`text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`}>
                   {booking.isPaid ? "Paid" : "Unpaid"}
@@ -120,7 +137,6 @@ const MyBookings = () => {
                 </button>
               )}
 
-              {/* 🔥 Now visible for both paid and unpaid bookings */}
               <button
                 className="px-4 py-1.5 text-xs text-red-600 border border-red-400 rounded-full hover:bg-red-50 transition-all"
                 onClick={() => handleRemove(booking._id)}

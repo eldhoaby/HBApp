@@ -6,7 +6,8 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import HotelReg from './HotelReg';
 import ListRooms from './ListRooms';
-import Dashboard from './Dashboard'; // ✅ import the real dashboard
+import Dashboard from './Dashboard';
+import EditRoom from './EditRoom';  // <-- Added import for EditRoom
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -42,7 +43,6 @@ const Admin = () => {
       });
   };
 
-  // ✅ Authenticated admin panel view
   if (isAuthenticated) {
     return (
       <div className="flex min-h-screen pt-[80px] bg-gray-50">
@@ -57,16 +57,19 @@ const Admin = () => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="add-room" element={<HotelReg />} />
             <Route path="list-rooms" element={<ListRooms />} />
+            <Route path="edit-room/:id" element={<EditRoom />} /> {/* <-- Added EditRoom route */}
           </Routes>
         </div>
       </div>
     );
   }
 
-  // 🔒 Admin Login Screen
+  // Login screen
   return (
     <div style={{ marginTop: '100px', padding: '20px' }}>
-      <Typography variant="h4" style={{ marginBottom: '2em' }}>Admin Login</Typography>
+      <Typography variant="h4" style={{ marginBottom: '2em' }}>
+        Admin Login
+      </Typography>
 
       <TextField
         label="Email"

@@ -1,12 +1,13 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const { booking } = location.state || {};
-  const { room, hotel, checkInDate, checkOutDate, guests, totalPrice, userId, _id } = booking || {};
+  const { room, hotel, checkInDate, checkOutDate, guests, totalPrice } = booking || {};
 
   const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
@@ -20,6 +21,13 @@ const Payment = () => {
 
   const handlePayment = async () => {
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user?._id) {
+        alert("Please log in to continue.");
+        navigate("/login");
+        return;
+      }
+
       const res = await fetch('http://localhost:3000/razorpay/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,29 +48,32 @@ const Payment = () => {
           alert('Payment Successful! ✅');
 
           try {
-            // ✅ Update booking to mark as paid
-            const updateRes = await fetch(`http://localhost:3000/bookings/${_id}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ isPaid: true }),
-            });
+            // ✅ Create the actual booking in DB after payment success
+            const newBooking = {
+              userId: user._id,
+              hotel,
+              room,
+              checkInDate,
+              checkOutDate,
+              guests,
+              totalPrice,
+              isPaid: true,
+            };
 
-            if (!updateRes.ok) {
-              throw new Error("Booking update failed.");
-            }
+            const createRes = await axios.post("http://localhost:3000/bookings", newBooking);
 
-            // ✅ Navigate to confirmation with paid booking
+            // ✅ Navigate to confirmation with saved booking
             navigate('/confirmation', {
-              state: { booking: { ...booking, isPaid: true } },
+              state: { booking: createRes.data },
             });
           } catch (err) {
-            console.error('Booking update error:', err);
-            alert('Payment succeeded, but failed to update booking.');
+            console.error('Booking creation failed:', err);
+            alert('Payment succeeded, but failed to save booking.');
           }
         },
         prefill: {
-          name: booking.name || 'Guest',
-          email: booking.email || 'guest@example.com',
+          name: user.name || 'Guest',
+          email: user.email || 'guest@example.com',
           contact: '9999999999',
         },
         theme: {
