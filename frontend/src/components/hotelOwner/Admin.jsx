@@ -6,45 +6,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import HotelReg from './HotelReg';
 import ListRooms from './ListRooms';
-
-// Dummy Dashboard component (replace with your real dashboard)
-const Dashboard = () => (
-  <div className="space-y-6">
-    {/* Top metrics */}
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div className="bg-blue-500 text-white rounded p-6 shadow">
-        <h3 className="text-lg font-medium">Total Bookings</h3>
-        <p className="text-2xl font-bold mt-2">0</p>
-      </div>
-      <div className="bg-green-500 text-white rounded p-6 shadow">
-        <h3 className="text-lg font-medium">Total Revenue</h3>
-        <p className="text-2xl font-bold mt-2">₹0</p>
-      </div>
-      <div className="bg-yellow-500 text-white rounded p-6 shadow">
-        <h3 className="text-lg font-medium">Pending Bookings</h3>
-        <p className="text-2xl font-bold mt-2">0</p>
-      </div>
-    </div>
-
-    {/* Recent Bookings Table */}
-    <div className="bg-white rounded shadow p-4 mt-6 overflow-x-auto">
-      <table className="w-full text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="py-2 px-4 font-medium">User</th>
-            <th className="py-2 px-4 font-medium">Amount</th>
-            <th className="py-2 px-4 font-medium">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-t">
-            <td className="py-3 px-4 text-gray-500" colSpan={3}>No bookings yet</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-);
+import Dashboard from './Dashboard'; // ✅ import the real dashboard
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -80,16 +42,16 @@ const Admin = () => {
       });
   };
 
-  // 🟡 Logged-in view
+  // ✅ Authenticated admin panel view
   if (isAuthenticated) {
     return (
       <div className="flex min-h-screen pt-[80px] bg-gray-50">
-        {/* Sidebar (fixed left) */}
+        {/* Sidebar */}
         <div className="w-64 bg-white shadow-md fixed h-full z-10">
           <Sidebar />
         </div>
 
-        {/* Main Content */}
+        {/* Main content */}
         <div className="ml-64 flex-1 p-6 overflow-auto">
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
@@ -101,7 +63,7 @@ const Admin = () => {
     );
   }
 
-  // 🔒 Login screen (unauthenticated)
+  // 🔒 Admin Login Screen
   return (
     <div style={{ marginTop: '100px', padding: '20px' }}>
       <Typography variant="h4" style={{ marginBottom: '2em' }}>Admin Login</Typography>
