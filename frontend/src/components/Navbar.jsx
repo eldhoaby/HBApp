@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { FaUserShield } from "react-icons/fa";
 import Login from "./Login";
 import Register from "./Register";
 import adminIcon from "../assets/adminIcon.png";
@@ -91,7 +90,6 @@ const NavBar = () => {
 
   return (
     <>
-      {/* === MAIN NAV === */}
       <nav
         className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 ${
           isScrolled
@@ -99,7 +97,6 @@ const NavBar = () => {
             : "py-4 md:py-6 text-white"
         }`}
       >
-        {/* === LOGO === */}
         <Link to="/">
           <img
             src={assets.logo}
@@ -108,7 +105,6 @@ const NavBar = () => {
           />
         </Link>
 
-        {/* === DESKTOP LINKS === */}
         <div className="hidden md:flex items-center gap-4 lg:gap-8">
           {navLinks.map((link, i) => (
             <button
@@ -130,7 +126,6 @@ const NavBar = () => {
           ))}
         </div>
 
-        {/* === RIGHT PROFILE ICONS === */}
         <div className="hidden md:flex items-center gap-4 relative">
           <img
             src={assets.searchIcon}
@@ -150,7 +145,10 @@ const NavBar = () => {
               </div>
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
-                  <Link to="/my-bookings" className="block px-4 py-2 hover:bg-gray-100">
+                  <Link
+                    to="/my-bookings"
+                    className="block px-4 py-2 text-black hover:bg-gray-100"
+                  >
                     My Bookings
                   </Link>
                   <button
@@ -175,7 +173,16 @@ const NavBar = () => {
               />
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
-                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100">
+                  <Link
+                    to="/my-bookings"
+                    className="block px-4 py-2 text-black hover:bg-gray-100"
+                  >
+                    My Bookings
+                  </Link>
+                  <Link
+                    to="/admin"
+                    className="block px-4 py-2 text-black hover:bg-gray-100"
+                  >
                     Admin Dashboard
                   </Link>
                   <button
@@ -189,7 +196,6 @@ const NavBar = () => {
             </div>
           )}
 
-          {/* === LOGIN === */}
           {!role && (
             <button
               onClick={() => setShowLogin(true)}
@@ -200,7 +206,6 @@ const NavBar = () => {
           )}
         </div>
 
-        {/* === MOBILE MENU ICON === */}
         <div className="flex md:hidden items-center gap-3">
           <img
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -247,6 +252,9 @@ const NavBar = () => {
         {role === "admin" && (
           <>
             <img src={adminIcon} alt="admin" className="h-10 w-10 rounded-full border" />
+            <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>
+              My Bookings
+            </Link>
             <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
               Admin Dashboard
             </Link>
@@ -276,7 +284,6 @@ const NavBar = () => {
         )}
       </div>
 
-      {/* === MODALS === */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
