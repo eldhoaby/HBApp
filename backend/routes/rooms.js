@@ -130,6 +130,18 @@ router.post("/check-availability", async (req, res) => {
     res.status(500).json({ available: false, message: "Server error checking availability." });
   }
 });
+// ✅ Get rooms by owner ID (used by hotel owners)
+router.get("/owner/:ownerId", async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+    const rooms = await Room.find({ "owner._id": ownerId }); // Adjust if using ObjectId
+    res.json(rooms);
+  } catch (err) {
+    console.error("❌ Error fetching owner's rooms:", err);
+    res.status(500).json({ error: "Failed to fetch owner's rooms" });
+  }
+});
+
 
 // ✅ Search places by query (corrected!)
 router.get("/search-places", async (req, res) => {

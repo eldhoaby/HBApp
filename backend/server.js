@@ -5,6 +5,11 @@ import "dotenv/config";
 import cors from "cors";
 import connectDB from "./configs/db.js";
 
+
+//import adminRoutes from './routes/admin.js';
+//app.use('/admin', adminRoutes);
+
+
 // Route imports
 import authRoutes from "./routes/auth.js";
 import roomRoutes from "./routes/rooms.js";
