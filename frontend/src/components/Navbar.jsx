@@ -174,12 +174,6 @@ const NavBar = () => {
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
                   <Link
-                    to="/my-bookings"
-                    className="block px-4 py-2 text-black hover:bg-gray-100"
-                  >
-                    My Bookings
-                  </Link>
-                  <Link
                     to="/admin"
                     className="block px-4 py-2 text-black hover:bg-gray-100"
                   >
@@ -252,9 +246,6 @@ const NavBar = () => {
         {role === "admin" && (
           <>
             <img src={adminIcon} alt="admin" className="h-10 w-10 rounded-full border" />
-            <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>
-              My Bookings
-            </Link>
             <Link to="/admin" onClick={() => setIsMenuOpen(false)}>
               Admin Dashboard
             </Link>

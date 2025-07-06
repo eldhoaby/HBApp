@@ -7,7 +7,7 @@ const Payment = () => {
   const navigate = useNavigate();
 
   const { booking } = location.state || {};
-  const { room, hotel, checkInDate, checkOutDate, guests, totalPrice } = booking || {};
+  const { room, hotel, checkInDate, checkOutDate, guests, totalPrice, _id: bookingId } = booking || {};
 
   const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
@@ -35,7 +35,7 @@ const Payment = () => {
       });
 
       const data = await res.json();
-      const order = data.order;
+      const order = data.order; // ✅ Correct: use `data.order`, not `data`
 
       const options = {
         key,
@@ -48,27 +48,16 @@ const Payment = () => {
           alert('Payment Successful! ✅');
 
           try {
-            // ✅ Create the actual booking in DB after payment success
-            const newBooking = {
-              userId: user._id,
-              hotel,
-              room,
-              checkInDate,
-              checkOutDate,
-              guests,
-              totalPrice,
+            const updateRes = await axios.put(`http://localhost:3000/bookings/${bookingId}`, {
               isPaid: true,
-            };
+            });
 
-            const createRes = await axios.post("http://localhost:3000/bookings", newBooking);
-
-            // ✅ Navigate to confirmation with saved booking
             navigate('/confirmation', {
-              state: { booking: createRes.data },
+              state: { booking: updateRes.data },
             });
           } catch (err) {
-            console.error('Booking creation failed:', err);
-            alert('Payment succeeded, but failed to save booking.');
+            console.error('Booking update failed:', err);
+            alert('Payment succeeded, but failed to update booking.');
           }
         },
         prefill: {
