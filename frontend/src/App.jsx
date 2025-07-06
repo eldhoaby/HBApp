@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import NavBar from "./components/Navbar";
-import AdminNavbar from "./components/hotelOwner/AdminNavbar";
 import Footer from "./components/Footer";
 
 import Login from "./components/Login";
@@ -14,7 +13,7 @@ import RoomDetails from "./pages/RoomDetails";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
 
-// Admin layout with nested routes (dashboard, add room, list rooms)
+// Admin layout with nested routes (Dashboard, Add Room, List Rooms)
 import Admin from "./components/hotelOwner/Admin";
 
 const App = () => {
@@ -44,12 +43,8 @@ const App = () => {
 
   return (
     <div>
-      {/* Show appropriate navbar */}
-      {isAdminPath ? (
-        <AdminNavbar />
-      ) : (
-        <NavBar onLoginClick={() => setShowLogin(true)} user={user} />
-      )}
+      {/* Show unified NavBar for all routes */}
+      <NavBar onLoginClick={() => setShowLogin(true)} user={user} />
 
       {/* Main content */}
       <div className="min-h-[70vh]">
@@ -87,17 +82,25 @@ const App = () => {
         </Routes>
       </div>
 
-      {/* Auth modals */}
+      {/* Auth Modals */}
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
           onSwitch={handleSwitchToRegister}
           onLoginSuccess={(userData) => {
             setUser(userData);
-            setShowLogin(false);
+            setShowLogin(false); // ✅ Close login modal
+
+            const role = localStorage.getItem("role");
+            if (role === "admin") {
+              navigate("/admin");
+            } else {
+              navigate("/rooms"); // Or "/"
+            }
           }}
         />
       )}
+
       {showRegister && (
         <Register
           onClose={() => setShowRegister(false)}
@@ -105,7 +108,7 @@ const App = () => {
         />
       )}
 
-      {/* Footer only on non-admin routes */}
+      {/* Footer only for non-admin pages */}
       {!isAdminPath && <Footer />}
     </div>
   );
