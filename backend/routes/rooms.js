@@ -10,18 +10,8 @@ router.get("/", async (req, res) => {
     const rooms = await Room.find();
     res.json(rooms);
   } catch (error) {
+    console.error("❌ Error fetching rooms:", error);
     res.status(500).send("Error fetching rooms");
-  }
-});
-
-// ✅ Get room by ID
-router.get("/:id", async (req, res) => {
-  try {
-    const room = await Room.findById(req.params.id);
-    if (!room) return res.status(404).send("Room not found");
-    res.json(room);
-  } catch (error) {
-    res.status(500).send("Error fetching room details");
   }
 });
 
@@ -32,6 +22,7 @@ router.post("/", async (req, res) => {
     await newRoom.save();
     res.send("Room added successfully");
   } catch (error) {
+    console.error("❌ Error adding room:", error);
     res.status(500).send("Error adding room");
   }
 });
@@ -42,6 +33,7 @@ router.put("/:id", async (req, res) => {
     await Room.findByIdAndUpdate(req.params.id, req.body);
     res.send("Room updated successfully");
   } catch (error) {
+    console.error("❌ Error updating room:", error);
     res.status(500).send("Error updating room");
   }
 });
@@ -52,6 +44,7 @@ router.delete("/:id", async (req, res) => {
     await Room.findByIdAndDelete(req.params.id);
     res.send("Room deleted successfully");
   } catch (error) {
+    console.error("❌ Error deleting room:", error);
     res.status(500).send("Error deleting room");
   }
 });
@@ -98,7 +91,7 @@ router.post("/check-availability", async (req, res) => {
   }
 });
 
-// ✅ Search places by query (starts with city or address)
+// ✅ Search places by query (before /:id route)
 router.get("/search-places", async (req, res) => {
   try {
     const query = req.query.query?.trim().toLowerCase();
@@ -129,6 +122,18 @@ router.get("/search-places", async (req, res) => {
   } catch (err) {
     console.error("Error fetching places:", err);
     res.status(500).json({ error: "Server error fetching places" });
+  }
+});
+
+// ✅ Get room by ID — placed last to avoid conflicts
+router.get("/:id", async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room) return res.status(404).send("Room not found");
+    res.json(room);
+  } catch (error) {
+    console.error("❌ Error fetching room details:", error);
+    res.status(500).send("Error fetching room details");
   }
 });
 

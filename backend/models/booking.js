@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema({
   userId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,   // ✅ Use ObjectId
+    ref: "User",                            // ✅ Reference the User model
     required: true
   },
   hotel: {
@@ -23,7 +24,7 @@ const bookingSchema = new mongoose.Schema({
   totalPrice: Number,
   isPaid: Boolean
 }, {
-  timestamps: true // ✅ Adds createdAt and updatedAt automatically
+  timestamps: true
 });
 
 export default mongoose.model("Booking", bookingSchema);
