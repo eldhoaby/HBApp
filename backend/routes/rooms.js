@@ -1,3 +1,5 @@
+// routes/rooms.js
+
 import express from "express";
 import Room from "../models/room.js";
 import Booking from "../models/booking.js";
@@ -16,16 +18,54 @@ router.get("/", async (req, res) => {
 });
 
 // ✅ Add new room
+// ✅ Add new room (with validation and logging)
 router.post("/", async (req, res) => {
   try {
-    const newRoom = new Room(req.body);
+    console.log("📥 Incoming room data:", req.body); // Log request body
+
+    const {
+      name,
+      city,
+      address,
+      phoneNumber,
+      amenities,
+      price,
+      rating,
+      reviewsCount,
+      images,
+      roomType,
+    } = req.body;
+
+    // 🔒 Validate required fields
+    if (
+      !name || !city || !address || !phoneNumber || !amenities ||
+      !price || !rating || !reviewsCount || !images || !roomType
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    if (!Array.isArray(amenities) || !Array.isArray(images)) {
+      return res.status(400).json({ error: "Amenities and Images must be arrays" });
+    }
+
+    // 💾 Create new Room
+    const newRoom = new Room({
+      ...req.body,
+      price: Number(price),
+      rating: Number(rating),
+      reviewsCount: Number(reviewsCount),
+    });
+
     await newRoom.save();
-    res.send("Room added successfully");
+
+    console.log("✅ Room added:", newRoom._id);
+    res.status(201).json({ message: "Room added successfully", room: newRoom });
   } catch (error) {
-    console.error("❌ Error adding room:", error);
-    res.status(500).send("Error adding room");
+    console.error("❌ Error adding room:", error.message);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 });
+
 
 // ✅ Update room by ID
 router.put("/:id", async (req, res) => {
@@ -91,7 +131,7 @@ router.post("/check-availability", async (req, res) => {
   }
 });
 
-// ✅ Search places by query (before /:id route)
+// ✅ Search places by query (corrected!)
 router.get("/search-places", async (req, res) => {
   try {
     const query = req.query.query?.trim().toLowerCase();
@@ -103,7 +143,7 @@ router.get("/search-places", async (req, res) => {
       $or: [
         { city: { $regex: regex } },
         { address: { $regex: regex } },
-        { "hotel.address": { $regex: regex } }
+        { "owner.name": { $regex: regex } }  // ✅ Correct field
       ]
     }).limit(10);
 
@@ -113,8 +153,8 @@ router.get("/search-places", async (req, res) => {
         placesSet.add(room.city);
       } else if (room.address?.toLowerCase().startsWith(query)) {
         placesSet.add(room.address);
-      } else if (room.hotel?.address?.toLowerCase().startsWith(query)) {
-        placesSet.add(room.hotel.address);
+      } else if (room.owner?.name?.toLowerCase().startsWith(query)) {
+        placesSet.add(room.owner.name);
       }
     });
 

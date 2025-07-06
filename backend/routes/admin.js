@@ -26,17 +26,28 @@ router.post("/login", async (req, res) => {
 });
 
 // ✅ Admin Metrics Route
+// ✅ Admin Dashboard Metrics
 router.get("/metrics", async (req, res) => {
   try {
-    const allBookings = await Booking.find()
-      .populate("userId", "name phoneNumber")
-      .sort({ createdAt: -1 });
+    // Populate userId to access name & phone
+    const allBookings = await Booking.find().populate("userId").sort({ createdAt: -1 });
 
     const totalBookings = allBookings.length;
     const totalRevenue = allBookings.reduce((acc, b) => acc + (b.totalPrice || 0), 0);
     const pendingBookings = allBookings.filter(b => !b.isPaid).length;
 
+    const recentBookings = allBookings.slice(0, 5).map(b => ({
+      _id: b._id,
+      userName: b.userId?.name || "N/A",
+      phone: b.userId?.phoneNumber || "N/A",
+      roomName: b.room?.name || "N/A",
+      amount: b.totalPrice || 0,
+      status: b.isPaid ? "Completed" : "Pending"
+    }));
+
+    // ✅ Send all bookings (for full list view)
     const bookings = allBookings.map(b => ({
+      _id: b._id,
       userName: b.userId?.name || "N/A",
       phone: b.userId?.phoneNumber || "N/A",
       roomName: b.room?.name || "N/A",
@@ -48,13 +59,15 @@ router.get("/metrics", async (req, res) => {
       totalBookings,
       totalRevenue,
       pendingBookings,
-      bookings // ✅ all bookings, not just recent
+      recentBookings,
+      bookings // 👈 Include full bookings list
     });
   } catch (err) {
     console.error("❌ Admin metrics error:", err);
     res.status(500).json({ error: "Failed to load metrics" });
   }
 });
+
 
 
 export default router;
