@@ -4,7 +4,7 @@
 
 ### Modern Full-Stack Hotel Booking Platform
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-00C853?style=for-the-badge)](https://hb-app-eight.vercel.app)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Now-00C853?style=for-the-badge)](https://hb-app-eldho.vercel.app)
 [![Backend API](https://img.shields.io/badge/⚡_API-Live-blue?style=for-the-badge)](https://homystay-backend.onrender.com)
 
 [![React](https://img.shields.io/badge/React-19.1-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
@@ -18,7 +18,7 @@
 
 **A production-grade, full-stack MERN hotel reservation platform with role-based access control, real-time availability tracking, and integrated payment processing.**
 
-[Live Demo](https://hb-app-eight.vercel.app) · [API Documentation](./docs/api.md) · [Report Bug](https://github.com/eldhoaby/HBApp/issues) · [Request Feature](https://github.com/eldhoaby/HBApp/issues)
+[Live Demo](https://hb-app-eldho.vercel.app) · [API Documentation](./docs/api.md) · [Report Bug](https://github.com/eldhoaby/HBApp/issues) · [Request Feature](https://github.com/eldhoaby/HBApp/issues)
 
 </div>
 
@@ -339,7 +339,7 @@ The application is deployed on a modern cloud infrastructure:
 
 | Component | Platform | URL |
 |-----------|----------|-----|
-| **Frontend** | Vercel | [hb-app-eight.vercel.app](https://hb-app-eight.vercel.app) |
+| **Frontend** | Vercel | [hb-app-eldho.vercel.app](https://hb-app-eldho.vercel.app) |
 | **Backend** | Render | [homystay-backend.onrender.com](https://homystay-backend.onrender.com) |
 | **Database** | MongoDB Atlas | Private cluster |
 

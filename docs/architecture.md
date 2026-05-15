@@ -180,7 +180,7 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "CDN & Frontend"
-        Vercel["▲ Vercel<br/>React + Vite<br/>hb-app-eight.vercel.app"]
+        Vercel["▲ Vercel<br/>React + Vite<br/>hb-app-eldho.vercel.app"]
     end
     
     subgraph "Backend Services"
