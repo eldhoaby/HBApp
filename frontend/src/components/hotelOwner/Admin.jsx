@@ -29,7 +29,7 @@ const Admin = () => {
 
   const handleLogin = () => {
     axios
-      .post('http://localhost:3000/admin/login', credentials)
+      .post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/login`, credentials)
       .then((res) => {
         localStorage.setItem('user', JSON.stringify(res.data));
         localStorage.setItem('role', 'admin');

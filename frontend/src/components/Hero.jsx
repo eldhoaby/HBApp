@@ -23,7 +23,7 @@ const Hero = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await fetch("http://localhost:3000/rooms");
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
         const data = await res.json();
         const citySet = new Set();
 

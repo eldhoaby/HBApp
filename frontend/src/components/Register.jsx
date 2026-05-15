@@ -71,7 +71,7 @@ const Register = ({ onClose, onSwitch }) => {
     try {
       console.log('Submitting registration form:', form);
 
-      const baseURL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000';
+      const baseURL = import.meta.env.VITE_BASE_URL || `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}`;
       const res = await axios.post(`${baseURL}/users/register`, form);
 
       console.log('Registration response:', res.data);
@@ -105,10 +105,10 @@ const Register = ({ onClose, onSwitch }) => {
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/10 z-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-xl w-[90%] max-w-md shadow-lg relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">✖</button>
-        <h2 className="text-2xl font-bold text-center mb-1">Create your account</h2>
-        <p className="text-center text-sm text-gray-500 mb-4">
+      <div className="bg-white p-8 rounded-2xl w-[90%] max-w-md shadow-2xl relative border border-gray-100 my-4 max-h-[90vh] overflow-y-auto">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors">✖</button>
+        <h2 className="text-2xl font-extrabold text-center mb-2 tracking-tight text-gray-900">Create your account</h2>
+        <p className="text-center text-sm text-gray-500 mb-6">
           Welcome! Please fill in the details to get started.
         </p>
 
@@ -128,7 +128,7 @@ const Register = ({ onClose, onSwitch }) => {
 
           <button
             type="submit"
-            className="bg-black text-white w-full py-2 rounded mt-4"
+            className="bg-black text-white w-full py-2.5 rounded-lg mt-6 hover:bg-gray-800 transition-colors duration-300 font-medium shadow-md"
           >
             Continue →
           </button>

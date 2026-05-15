@@ -28,7 +28,7 @@ const Payment = () => {
         return;
       }
 
-      const res = await fetch('http://localhost:3000/razorpay/create-order', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/razorpay/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: totalPrice }),
@@ -48,7 +48,7 @@ const Payment = () => {
           alert('Payment Successful! ✅');
 
           try {
-            const updateRes = await axios.put(`http://localhost:3000/bookings/${bookingId}`, {
+            const updateRes = await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, {
               isPaid: true,
             });
 

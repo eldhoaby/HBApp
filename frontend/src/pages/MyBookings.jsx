@@ -19,7 +19,7 @@
 //         return;
 //       }
 
-//       const res = await axios.get(`http://localhost:3000/bookings/user/${userId}`);
+//       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/user/${userId}`);
 //       setBookings(res.data);
 //       console.log("Bookings fetched:", res.data);
 //     } catch (err) {
@@ -42,7 +42,7 @@
 //     if (!confirmCancel) return;
 
 //     try {
-//       await axios.put(`http://localhost:3000/bookings/${bookingId}`, { status: "Cancelled by Admin" });
+//       await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, { status: "Cancelled by Admin" });
 //       setBookings((prev) =>
 //         prev.map((b) => (b._id === bookingId ? { ...b, status: "Cancelled by Admin" } : b))
 //       );
@@ -188,7 +188,7 @@ const MyBookings = () => {
         return;
       }
 
-      const res = await axios.get(`http://localhost:3000/bookings/user/${userId}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/user/${userId}`);
       setBookings(res.data);
       console.log("Bookings fetched:", res.data);
     } catch (err) {
@@ -210,7 +210,7 @@ const MyBookings = () => {
     if (!confirmCancel) return;
 
     try {
-      await axios.put(`http://localhost:3000/bookings/${bookingId}`, {
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, {
         status: "Cancelled by User",
       });
 

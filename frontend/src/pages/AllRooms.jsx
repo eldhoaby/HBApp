@@ -71,7 +71,7 @@
 //   useEffect(() => {
 //     const fetchRooms = async () => {
 //       try {
-//         const response = await fetch('http://localhost:3000/rooms');
+//         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
 //         const data = await response.json();
 //         setRooms(data);
 //       } catch (error) {
@@ -351,7 +351,7 @@ const AllRooms = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch('http://localhost:3000/rooms');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
         const data = await response.json();
 
         const filteredByCity = cityQuery
