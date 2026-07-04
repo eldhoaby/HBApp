@@ -1,10 +1,12 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { usePreferences } from '../context/DarkModeContext';
 
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { formatPrice } = usePreferences();
 
   const { booking } = location.state || {};
   const { room, hotel, checkInDate, checkOutDate, guests, totalPrice, _id: bookingId } = booking || {};
@@ -12,7 +14,7 @@ const Payment = () => {
   const key = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
   if (!booking) {
-    return <p className="pt-32 text-center text-red-600">Invalid booking. Please try again.</p>;
+    return <p className="pt-32 text-center text-red-600 dark:text-red-400">Invalid booking. Please try again.</p>;
   }
 
   const nights = Math.ceil(
@@ -79,15 +81,15 @@ const Payment = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white shadow-lg p-10 rounded-lg w-full max-w-lg text-center">
-        <h2 className="text-2xl font-bold mb-4">Proceed to Payment</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 pt-20 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700/60 shadow-lg p-10 rounded-3xl w-full max-w-lg text-center text-gray-800 dark:text-gray-150">
+        <h2 className="text-2xl font-bold mb-6 font-playfair text-gray-850 dark:text-white">Proceed to Payment</h2>
         <p className="mb-2"><strong>Room:</strong> {room?.name}</p>
         <p className="mb-2"><strong>Check-in:</strong> {new Date(checkInDate).toDateString()}</p>
         <p className="mb-2"><strong>Check-out:</strong> {new Date(checkOutDate).toDateString()}</p>
         <p className="mb-2"><strong>Guests:</strong> {guests}</p>
-        <p className="text-lg font-medium mt-4 mb-6">
-          Total: ₹{room?.price} x {nights} nights = ₹{totalPrice}
+        <p className="text-lg font-medium mt-4 mb-6 text-gray-850 dark:text-white">
+          Total: {formatPrice(room?.price)} x {nights} night{nights > 1 ? 's' : ''} = {formatPrice(totalPrice)}
         </p>
         <button
           onClick={handlePayment}

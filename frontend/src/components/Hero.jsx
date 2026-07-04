@@ -64,7 +64,7 @@ const Hero = () => {
     setShowDropdown(false);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
 
     const today = new Date();
@@ -103,8 +103,34 @@ const Hero = () => {
 
     if (!isValid) return;
 
+    let targetCity = destinationInput.trim();
+    
+    // Check if the destination is an exact city name
+    const isExactCity = allCities.some(
+      (c) => c.toLowerCase().trim() === targetCity.toLowerCase().trim()
+    );
+
+    if (targetCity && !isExactCity) {
+      try {
+        const res = await fetch("http://localhost:3000/chatbot/semantic-search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: targetCity })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.city) {
+            targetCity = data.city;
+            console.log(`✨ Semantic Search: Mapped "${destinationInput}" to ${targetCity}`);
+          }
+        }
+      } catch (err) {
+        console.error("Semantic search failed:", err);
+      }
+    }
+
     const query = new URLSearchParams({
-      city: destinationInput.trim(),
+      city: targetCity,
       checkIn,
       checkOut,
       guests,

@@ -47,6 +47,7 @@ import Hero from "../components/Hero";
 import FeaturedDestination from "../components/FeaturedDestination";
 import Testimonial from "../components/Testimonial";
 import Footer from "../components/Footer";
+import Recommendations from "../components/Recommendations";
 
 const Home = () => {
   const location = useLocation();
@@ -71,6 +72,7 @@ const Home = () => {
       <div ref={heroRef}>
         <Hero />
       </div>
+      <Recommendations />
       <FeaturedDestination />
       <div ref={testimonialRef}>
         <Testimonial />

@@ -12,9 +12,13 @@ import AllRooms from "./pages/AllRooms";
 import RoomDetails from "./pages/RoomDetails";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import Wishlist from "./pages/Wishlist";
 
 // Admin layout with nested routes (Dashboard, Add Room, List Rooms)
 import Admin from "./components/hotelOwner/Admin";
+import ChatbotWidget from "./components/ChatbotWidget";
 
 const App = () => {
   const location = useLocation();
@@ -56,6 +60,9 @@ const App = () => {
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/wishlist" element={<Wishlist />} />
 
           {/* Auth Routes */}
           <Route
@@ -107,6 +114,9 @@ const App = () => {
           onSwitch={handleSwitchToLogin}
         />
       )}
+
+      {/* Floating Chatbot Widget */}
+      <ChatbotWidget />
 
       {/* Footer only for non-admin pages */}
       {/* <Footer /> */}

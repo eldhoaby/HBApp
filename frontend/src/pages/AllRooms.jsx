@@ -281,9 +281,13 @@ import {
   FaUtensils, FaCoffee, FaLeaf, FaBiking, FaMountain, FaWater,
   FaEye, FaChair, FaCouch
 } from 'react-icons/fa';
+import { BsHeart, BsHeartFill } from 'react-icons/bs';
 import StarRating from '../components/StarRating';
 import Login from '../components/Login';
 import Register from '../components/Register';
+import FiltersPanel from '../components/FiltersPanel';
+import DealBadge from '../components/DealBadge';
+import { usePreferences } from '../context/DarkModeContext';
 
 const amenityIcons = {
   "WiFi": <FaWifi className="text-blue-600" />,
@@ -335,6 +339,7 @@ const AllRooms = () => {
   const searchParams = new URLSearchParams(location.search);
   const cityQuery = searchParams.get('city');
 
+  const { formatPrice } = usePreferences();
   const [rooms, setRooms] = useState([]);
   const [openFilters, setOpenFilters] = useState(false);
   const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
@@ -343,6 +348,81 @@ const AllRooms = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [roomToNavigate, setRoomToNavigate] = useState(null);
+  const [dealAlertsOnly, setDealAlertsOnly] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userWishlist, setUserWishlist] = useState([]);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("user"));
+  }, []);
+
+  // Fetch wishlist dynamically from backend populated user record
+  useEffect(() => {
+    const fetchUserWishlist = async () => {
+      const stored = localStorage.getItem("user");
+      if (!stored) {
+        setUserWishlist([]);
+        return;
+      }
+      try {
+        const parsed = JSON.parse(stored);
+        const res = await fetch(`http://localhost:3000/users/${parsed._id}/wishlist`);
+        if (res.ok) {
+          const data = await res.json();
+          setUserWishlist(data.map((r) => r._id));
+        }
+      } catch (err) {
+        console.error("Error fetching user wishlist:", err);
+      }
+    };
+    fetchUserWishlist();
+  }, [isLoggedIn]);
+
+  const handleToggleWishlist = async (e, roomId) => {
+    e.stopPropagation();
+    const stored = localStorage.getItem("user");
+    if (!stored) {
+      alert("Please log in to manage your wishlist stays!");
+      setShowLogin(true);
+      return;
+    }
+
+    const parsed = JSON.parse(stored);
+    const isWishlisted = userWishlist.includes(roomId);
+
+    try {
+      if (isWishlisted) {
+        const res = await fetch(`http://localhost:3000/users/${parsed._id}/wishlist/${roomId}`, {
+          method: "DELETE"
+        });
+        if (res.ok) {
+          setUserWishlist((prev) => prev.filter((id) => id !== roomId));
+        }
+      } else {
+        const res = await fetch(`http://localhost:3000/users/${parsed._id}/wishlist/${roomId}`, {
+          method: "POST"
+        });
+        if (res.ok) {
+          setUserWishlist((prev) => [...prev, roomId]);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to toggle wishlist:", err);
+    }
+  };
+
+  const handleDealAlertsChange = (checked) => {
+    setDealAlertsOnly(checked);
+    if (checked) {
+      const user = localStorage.getItem("user");
+      if (user) {
+        alert("🔔 Deal alerts activated! You will receive email/push notifications when prices drop for these hotels.");
+      } else {
+        alert("🔓 Please log in to subscribe to deal alerts and price drops.");
+        setShowLogin(true);
+      }
+    }
+  };
 
   const roomTypes = ["Single Bed", "Double Bed", "Luxury Room", "Family Suit"];
   const priceRanges = ['0 to 500', '500 to 1000', '1000 to 2000', '2000 to 3000'];
@@ -416,7 +496,8 @@ const AllRooms = () => {
           const [min, max] = range.split('to').map(Number);
           return room.price >= min && room.price <= max;
         });
-      return matchesType && matchesPrice;
+      const matchesDeal = !dealAlertsOnly || (room.price % 3 === 0 || room.price > 2000);
+      return matchesType && matchesPrice && matchesDeal;
     })
     .sort((a, b) => {
       if (selectedSortOption === 'Price Low to High') return a.price - b.price;
@@ -426,8 +507,8 @@ const AllRooms = () => {
 
   return (
     <>
-      <div className="flex flex-col-reverse lg:flex-row items-start justify-between pt-28 px-4 md:px-16 lg:px-24 xl:px-32">
-        <div>
+      <div className="flex flex-col-reverse lg:flex-row items-start gap-8 pt-28 px-4 md:px-16 lg:px-24 xl:px-32 max-w-7xl mx-auto w-full">
+        <div className="flex-1 w-full">
           <h1 className="font-playfair text-4xl">Hotel Rooms</h1>
           <p className="text-sm text-gray-500 mt-2 max-w-2xl">
             Enjoy luxury and comfort. Browse and book your ideal stay.
@@ -450,103 +531,94 @@ const AllRooms = () => {
               )}
             </div>
           ) : (
-            filteredRooms.map((room) => (
-              <div key={room._id} className="flex flex-col md:flex-row py-10 gap-6 border-b">
-                <img
-                  onClick={() => handleImageClick(room._id)}
-                  src={room.images[0]}
-                  alt="room-img"
-                  className="max-h-64 md:w-1/2 rounded-xl object-cover cursor-pointer shadow-lg"
-                />
-                <div className="md:w-1/2">
-                  <p className="text-gray-500">{room.city}</p>
-                  <p
-                    onClick={() => handleImageClick(room._id)}
-                    className="text-2xl font-playfair cursor-pointer"
-                  >
-                    {room.name}{" "}
-                    <span className="text-sm font-normal">({room.roomType})</span>
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <StarRating /> <span>{room.reviewsCount}+ reviews</span>
+            filteredRooms.map((room) => {
+              const isWishlisted = userWishlist.includes(room._id);
+              return (
+                <div key={room._id} className="flex flex-col md:flex-row py-10 gap-6 border-b relative group">
+                  <div className="relative max-h-64 md:w-1/2 rounded-xl overflow-hidden shadow-lg shrink-0">
+                    <img
+                      onClick={() => handleImageClick(room._id)}
+                      src={room.images[0]}
+                      alt="room-img"
+                      className="w-full h-full object-cover cursor-pointer hover:scale-105 transition duration-500"
+                    />
+                    {/* Wishlist toggle heart button overlay */}
+                    <button
+                      onClick={(e) => handleToggleWishlist(e, room._id)}
+                      className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-md flex items-center justify-center text-teal-650 dark:text-teal-400 hover:scale-105 active:scale-95 transition border-none cursor-pointer"
+                      title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                    >
+                      {isWishlisted ? (
+                        <BsHeartFill className="text-red-500" size={15} />
+                      ) : (
+                        <BsHeart className="text-gray-450 dark:text-gray-400 hover:text-red-500" size={15} />
+                      )}
+                    </button>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">{room.address}</p>
-                  <div className="flex flex-wrap mt-3 gap-3">
-                    {room.amenities?.map((item, i) => (
-                      <span
-                        key={i}
-                        className="text-xs px-3 py-1 bg-gray-100 rounded-lg flex items-center gap-2"
-                      >
-                        {amenityIcons[item] || "🏨"} {item}
-                      </span>
-                    ))}
+                  <div className="md:w-1/2">
+                    <p className="text-gray-500">{room.city}</p>
+                    <p
+                      onClick={() => handleImageClick(room._id)}
+                      className="text-2xl font-playfair cursor-pointer"
+                    >
+                      {room.name}{" "}
+                      <span className="text-sm font-normal">({room.roomType})</span>
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {room.reviewsCount > 0 ? (
+                        <>
+                          <StarRating rating={room.rating} />
+                          <span className="text-sm text-gray-500 dark:text-gray-400">({room.reviewsCount} review{room.reviewsCount > 1 ? "s" : ""})</span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-gray-450 dark:text-gray-500 italic font-medium">No reviews yet. Be the first to review!</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">{room.address}</p>
+                    <div className="flex flex-wrap mt-3 gap-3">
+                      {room.amenities?.map((item, i) => (
+                        <span
+                          key={i}
+                          className="text-xs px-3 py-1 bg-gray-100 rounded-lg flex items-center gap-2"
+                        >
+                          {amenityIcons[item] || "🏨"} {item}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-xl font-medium text-gray-850 dark:text-white mt-4 flex items-center">
+                      {formatPrice(room.price)}/night
+                      <DealBadge price={room.price} />
+                    </p>
                   </div>
-                  <p className="text-xl font-medium text-gray-800 mt-4">
-                    ₹{room.price}/night
-                  </p>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
         {/* Filters Panel */}
-        <div className="bg-white w-80 border text-gray-600 mb-8 lg:mb-0 mt-0 lg:mt-16">
-          <div className={`flex items-center justify-between px-5 py-2.5 ${openFilters && "border-b"}`}>
-            <p className="text-base font-medium text-gray-800">FILTERS</p>
-            <div className="text-xs cursor-pointer">
-              <span onClick={() => setOpenFilters(!openFilters)} className="lg:hidden">
-                {openFilters ? "HIDE" : "SHOW"}
-              </span>
-              <span
-                className="hidden lg:block"
-                onClick={() => {
-                  setSelectedRoomTypes([]);
-                  setSelectedPriceRanges([]);
-                  setSelectedSortOption('');
-                }}
-              >
-                CLEAR
-              </span>
-            </div>
-          </div>
-
-          <div className={`${openFilters ? "h-auto" : "h-0 lg:h-auto"} overflow-hidden transition-all duration-700`}>
-            <div className="px-5 pt-5">
-              <p className="font-medium text-gray-800 pb-2">Room Types</p>
-              {roomTypes.map((type, i) => (
-                <CheckBox
-                  key={i}
-                  label={type}
-                  selected={selectedRoomTypes.includes(type)}
-                  onChange={handleRoomTypeChange}
-                />
-              ))}
-            </div>
-            <div className="px-5 pt-5">
-              <p className="font-medium text-gray-800 pb-2">Price Range</p>
-              {priceRanges.map((range, i) => (
-                <CheckBox
-                  key={i}
-                  label={range}
-                  selected={selectedPriceRanges.includes(range)}
-                  onChange={handlePriceRangeChange}
-                />
-              ))}
-            </div>
-            <div className="px-5 pt-5 pb-6">
-              <p className="font-medium text-gray-800 pb-2">Sort By</p>
-              {sortOptions.map((opt, i) => (
-                <RadioButton
-                  key={i}
-                  label={opt}
-                  selected={selectedSortOption === opt}
-                  onChange={handleSortOptionChange}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+        <FiltersPanel
+          openFilters={openFilters}
+          setOpenFilters={setOpenFilters}
+          roomTypes={roomTypes}
+          selectedRoomTypes={selectedRoomTypes}
+          handleRoomTypeChange={handleRoomTypeChange}
+          priceRanges={priceRanges}
+          selectedPriceRanges={selectedPriceRanges}
+          handlePriceRangeChange={handlePriceRangeChange}
+          sortOptions={sortOptions}
+          selectedSortOption={selectedSortOption}
+          handleSortOptionChange={handleSortOptionChange}
+          onClear={() => {
+            setSelectedRoomTypes([]);
+            setSelectedPriceRanges([]);
+            setSelectedSortOption('');
+            setDealAlertsOnly(false);
+          }}
+          dealAlertsOnly={dealAlertsOnly}
+          handleDealAlertsChange={handleDealAlertsChange}
+          isLoggedIn={isLoggedIn}
+        />
       </div>
 
       {/* Login Popup */}

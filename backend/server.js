@@ -17,6 +17,8 @@ import adminRoutes from "./routes/admin.js";
 import bookingRoutes from "./routes/bookings.js";
 import paymentRoutes from "./routes/payment.js";
 import razorpayRoutes from "./routes/razorpay.js";
+import chatbotRoutes from "./routes/chatbot.js";
+import reviewRoutes from "./routes/reviews.js";
 
 // Connect to DB
 connectDB();
@@ -28,6 +30,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: "http://localhost:5173" }));
 
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+
+// Serve review uploads statically as well
+app.use("/uploads/reviews", express.static("uploads/reviews"));
 
 // Routes
 app.get("/", (req, res) => res.send("✅ API is working fine"));
@@ -38,6 +44,8 @@ app.use("/bookings", bookingRoutes);
 app.use("/payment", paymentRoutes);
 app.use("/razorpay", razorpayRoutes);
 app.use("/admin", adminRoutes);       // ✅ Mounted at /admin
+app.use("/chatbot", chatbotRoutes);
+app.use("/reviews", reviewRoutes);
 
 // 404 Handler
 app.use((req, res) => {

@@ -4,6 +4,8 @@ import { assets } from "../assets/assets";
 import Login from "./Login";
 import Register from "./Register";
 import adminIcon from "../assets/adminIcon.png";
+import ProfileDropdown from "./ProfileDropdown";
+import Avatar from "./Avatar";
 
 const NavBar = () => {
   const location = useLocation();
@@ -16,6 +18,7 @@ const NavBar = () => {
   const [firstLetter, setFirstLetter] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const dropdownRef = useRef(null);
 
@@ -39,21 +42,23 @@ const NavBar = () => {
     const storedUser = localStorage.getItem("user");
 
     setRole(storedRole || "");
+    setFirstLetter("");
+    setCurrentUser(null);
 
     if (storedUser) {
       try {
         const parsed = JSON.parse(storedUser);
+        setCurrentUser(parsed);
         setFirstLetter(parsed.name?.[0]?.toUpperCase() || "");
       } catch (err) {
         console.error("Error parsing stored user", err);
-        setFirstLetter("");
       }
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      const solidPaths = ["/rooms", "/my-bookings", "/payment", "/confirmation"];
+      const solidPaths = ["/rooms", "/my-bookings", "/payment", "/confirmation", "/profile", "/settings", "/wishlist"];
       const isSolid =
         solidPaths.some((p) => location.pathname.startsWith(p)) ||
         location.pathname.startsWith("/admin");
@@ -138,27 +143,24 @@ const NavBar = () => {
             <div ref={dropdownRef} className="relative">
               <div
                 title="User"
-                className="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center font-semibold cursor-pointer"
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="cursor-pointer"
               >
-                {firstLetter || "U"}
+                <Avatar
+                  name={currentUser?.name}
+                  userId={currentUser?._id}
+                  imageUrl={currentUser?.avatar}
+                  size="w-9 h-9 text-sm font-semibold"
+                />
               </div>
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg text-sm z-50">
-                  <Link
-                    to="/my-bookings"
-                    onClick={() => setShowUserDropdown(false)}
-                    className="block px-4 py-2 text-black hover:bg-gray-100"
-                  >
-                    My Bookings
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
+                <ProfileDropdown
+                  onClose={() => setShowUserDropdown(false)}
+                  onLogout={handleLogout}
+                  firstLetter={firstLetter}
+                  userName={currentUser?.name}
+                  userEmail={currentUser?.email}
+                />
               )}
             </div>
           )}
@@ -237,9 +239,12 @@ const NavBar = () => {
         ))}
         {role === "user" && (
           <>
-            <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold text-lg">
-              {firstLetter || "U"}
-            </div>
+            <Avatar
+              name={currentUser?.name}
+              userId={currentUser?._id}
+              imageUrl={currentUser?.avatar}
+              size="w-10 h-10 text-base font-semibold"
+            />
             <Link to="/my-bookings" onClick={() => setIsMenuOpen(false)}>
               My Bookings
             </Link>

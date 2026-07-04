@@ -60,6 +60,14 @@ const bookingSchema = new mongoose.Schema({
     name: String,
     address: String
   },
+  hotelId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room"
+  },
+  roomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room"
+  },
   room: {
     roomType: String,
     name: String,
@@ -88,9 +96,19 @@ const bookingSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  status: {            // <--- Add this field
+  status: {
     type: String,
-    default: "Pending" // or whatever default you prefer
+    default: "Pending"
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["unpaid", "paid", "refunded"],
+    default: "unpaid"
+  },
+  bookingStatus: {
+    type: String,
+    enum: ["confirmed", "cancelled", "completed"],
+    default: "confirmed"
   }
 }, {
   timestamps: true

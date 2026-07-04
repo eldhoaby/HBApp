@@ -3,6 +3,7 @@
 import express from "express";
 import Room from "../models/room.js";
 import Booking from "../models/booking.js";
+import Review from "../models/Review.js";
 
 const router = express.Router();
 
@@ -10,7 +11,22 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const rooms = await Room.find();
-    res.json(rooms);
+    
+    // Calculate actual ratings and reviewsCount dynamically from Review collection
+    const roomsWithRealReviews = await Promise.all(rooms.map(async (room) => {
+      const roomReviews = await Review.find({ roomId: room._id, status: "approved" });
+      const reviewsCount = roomReviews.length;
+      const rating = reviewsCount > 0 
+        ? parseFloat((roomReviews.reduce((sum, r) => sum + r.rating, 0) / reviewsCount).toFixed(1))
+        : 0;
+      
+      const roomObj = room.toObject();
+      roomObj.rating = rating;
+      roomObj.reviewsCount = reviewsCount;
+      return roomObj;
+    }));
+    
+    res.json(roomsWithRealReviews);
   } catch (error) {
     console.error("❌ Error fetching rooms:", error);
     res.status(500).send("Error fetching rooms");
@@ -112,10 +128,12 @@ router.post("/check-availability", async (req, res) => {
 
     const overlappingBookings = await Booking.find({
       roomId,
+      bookingStatus: { $ne: "cancelled" },
+      status: { $nin: ["Cancelled by User", "Cancelled by Admin"] },
       $or: [
         {
-          checkInDate: { $lte: checkOutDate },
-          checkOutDate: { $gte: checkInDate },
+          checkInDate: { $lt: checkOutDate },
+          checkOutDate: { $gt: checkInDate },
         },
       ],
     });
@@ -134,8 +152,22 @@ router.post("/check-availability", async (req, res) => {
 router.get("/owner/:ownerId", async (req, res) => {
   try {
     const { ownerId } = req.params;
-    const rooms = await Room.find({ "owner._id": ownerId }); // Adjust if using ObjectId
-    res.json(rooms);
+    const rooms = await Room.find({ "owner._id": ownerId });
+    
+    const roomsWithRealReviews = await Promise.all(rooms.map(async (room) => {
+      const roomReviews = await Review.find({ roomId: room._id, status: "approved" });
+      const reviewsCount = roomReviews.length;
+      const rating = reviewsCount > 0 
+        ? parseFloat((roomReviews.reduce((sum, r) => sum + r.rating, 0) / reviewsCount).toFixed(1))
+        : 0;
+      
+      const roomObj = room.toObject();
+      roomObj.rating = rating;
+      roomObj.reviewsCount = reviewsCount;
+      return roomObj;
+    }));
+
+    res.json(roomsWithRealReviews);
   } catch (err) {
     console.error("❌ Error fetching owner's rooms:", err);
     res.status(500).json({ error: "Failed to fetch owner's rooms" });
@@ -182,7 +214,18 @@ router.get("/:id", async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
     if (!room) return res.status(404).send("Room not found");
-    res.json(room);
+    
+    const roomReviews = await Review.find({ roomId: room._id, status: "approved" });
+    const reviewsCount = roomReviews.length;
+    const rating = reviewsCount > 0 
+      ? parseFloat((roomReviews.reduce((sum, r) => sum + r.rating, 0) / reviewsCount).toFixed(1))
+      : 0;
+
+    const roomObj = room.toObject();
+    roomObj.rating = rating;
+    roomObj.reviewsCount = reviewsCount;
+
+    res.json(roomObj);
   } catch (error) {
     console.error("❌ Error fetching room details:", error);
     res.status(500).send("Error fetching room details");
