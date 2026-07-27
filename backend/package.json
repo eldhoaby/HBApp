@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "HomyStay Hotel Booking Backend API",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
