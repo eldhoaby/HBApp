@@ -15,7 +15,7 @@
 
 //   const fetchMetrics = async () => {
 //     try {
-//       const res = await axios.get('http://localhost:3000/admin/metrics');
+//       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/metrics`);
 //       setMetrics(res.data);
 //     } catch (err) {
 //       console.error("❌ Error fetching metrics:", err);
@@ -27,7 +27,7 @@
 //   if (!confirm) return;
 
 //   try {
-//     await axios.put(`http://localhost:3000/bookings/${bookingId}`, { status: "Cancelled by Admin" });
+//     await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, { status: "Cancelled by Admin" });
 //     alert("✅ Booking cancelled successfully!");
 //     fetchMetrics(); // Refresh after update
 //   } catch (error) {
@@ -132,7 +132,7 @@ const Dashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/admin/metrics');
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/metrics`);
       setMetrics(res.data);
     } catch (err) {
       console.error("❌ Error fetching metrics:", err);
@@ -144,7 +144,7 @@ const Dashboard = () => {
     if (!confirm) return;
 
     try {
-      await axios.put(`http://localhost:3000/bookings/${bookingId}`, { status: "Cancelled by Admin" });
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, { status: "Cancelled by Admin" });
       alert("✅ Booking cancelled successfully!");
       fetchMetrics(); // Refresh dashboard data
     } catch (error) {
@@ -158,7 +158,7 @@ const Dashboard = () => {
     if (!confirm) return;
 
     try {
-      await axios.delete(`http://localhost:3000/bookings/${bookingId}`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`);
       alert("🗑️ Booking deleted successfully!");
       fetchMetrics(); // Refresh dashboard data
     } catch (error) {

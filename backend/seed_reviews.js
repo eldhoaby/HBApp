@@ -3,7 +3,7 @@
 import mongoose from "mongoose";
 import "dotenv/config";
 import Room from "./models/room.js";
-import User from "./models/User.js";
+import User from "./models/user.js";
 import Booking from "./models/booking.js";
 import Review from "./models/Review.js";
 

@@ -33,7 +33,7 @@ const EditRoom = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/rooms/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${id}`);
         const room = res.data;
 
         setFormData({
@@ -94,7 +94,7 @@ const EditRoom = () => {
     };
 
     try {
-      await axios.put(`http://localhost:3000/rooms/${id}`, dataToSend);
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${id}`, dataToSend);
       alert("Room updated successfully!");
       navigate("/admin/list-rooms");
     } catch (error) {

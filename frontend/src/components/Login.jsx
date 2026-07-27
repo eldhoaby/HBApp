@@ -34,7 +34,7 @@ const Login = ({
     if (!validate()) return;
 
     try {
-      const res = await axios.post('http://localhost:3000/users/login', {
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/users/login`, {
         email,
         password,
       });
@@ -71,12 +71,12 @@ const Login = ({
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/10 z-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-xl w-[90%] max-w-md shadow-lg relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500">
+      <div className="bg-white p-8 rounded-2xl w-[90%] max-w-md shadow-2xl relative border border-gray-100">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors">
           ✖
         </button>
-        <h2 className="text-2xl font-bold text-center mb-1">Sign in to HomyStay</h2>
-        <p className="text-center text-sm text-gray-500 mb-4">
+        <h2 className="text-2xl font-extrabold text-center mb-2 tracking-tight text-gray-900">Sign in to HomyStay</h2>
+        <p className="text-center text-sm text-gray-500 mb-6">
           Welcome back! Please sign in to continue
         </p>
 
@@ -131,7 +131,7 @@ const Login = ({
 
         <button
           onClick={handleLogin}
-          className="bg-black text-white w-full py-2 rounded mt-5"
+          className="bg-black text-white w-full py-2.5 rounded-lg mt-6 hover:bg-gray-800 transition-colors duration-300 font-medium shadow-md"
         >
           Continue →
         </button>

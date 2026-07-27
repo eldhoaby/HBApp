@@ -57,7 +57,7 @@ const RoomDetails = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/rooms/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${id}`);
         if (!res.ok) throw new Error("Room not found");
         const data = await res.json();
         setRoom(data);
@@ -162,7 +162,7 @@ const RoomDetails = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/rooms/check-availability", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/check-availability`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId: id, checkInDate: checkIn, checkOutDate: checkOut }),
@@ -226,7 +226,7 @@ const RoomDetails = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/bookings", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),
@@ -285,7 +285,7 @@ const RoomDetails = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/bookings", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),

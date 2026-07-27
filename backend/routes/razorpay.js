@@ -4,9 +4,12 @@ import crypto from 'crypto';
 
 const router = express.Router();
 
+const keyId = process.env.RAZORPAY_KEY_ID || "rzp_test_caNlsL6IjcpJ5g";
+const keySecret = process.env.RAZORPAY_KEY_SECRET || "AjKHuxX0LleZon5EQZhKxFmw";
+
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: keyId,
+  key_secret: keySecret,
 });
 
 router.post('/create-order', async (req, res) => {

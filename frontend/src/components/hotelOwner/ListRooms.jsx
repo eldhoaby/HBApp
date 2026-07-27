@@ -13,7 +13,7 @@
 
 //   const fetchRooms = async () => {
 //     try {
-//       const res = await axios.get("http://localhost:3000/rooms");
+//       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
 //       setRooms(res.data);
 //     } catch (err) {
 //       console.error("❌ Failed to fetch rooms:", err);
@@ -26,7 +26,7 @@
 //     if (!window.confirm("Are you sure you want to delete this room?")) return;
 
 //     try {
-//       await axios.delete(`http://localhost:3000/rooms/${roomId}`);
+//       await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${roomId}`);
 //       alert("✅ Room deleted!");
 //       fetchRooms();
 //     } catch (err) {
@@ -52,7 +52,7 @@
 
 //   const handleUpdate = async (roomId) => {
 //     try {
-//       await axios.put(`http://localhost:3000/rooms/${roomId}`, {
+//       await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${roomId}`, {
 //         ...editForm,
 //         price: Number(editForm.price),
 //       });
@@ -194,7 +194,7 @@ const ListRooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/rooms");
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
       setRooms(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch rooms:", err);
@@ -207,7 +207,7 @@ const ListRooms = () => {
     if (!window.confirm("Are you sure you want to delete this room?")) return;
 
     try {
-      await axios.delete(`http://localhost:3000/rooms/${roomId}`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${roomId}`);
       alert("✅ Room deleted!");
       fetchRooms();
     } catch (err) {
