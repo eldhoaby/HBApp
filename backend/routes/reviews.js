@@ -71,9 +71,7 @@ router.get("/rooms/:roomId/check-eligibility", async (req, res) => {
       return res.json({ eligible: false, message: "You have already reviewed this room." });
     }
 
-    const todayStr = new Date().toISOString().split("T")[0];
-    
-    // Find any completed booking
+    // Find any valid non-cancelled booking
     const verifiedBooking = await Booking.findOne({
       userId,
       $or: [
@@ -81,8 +79,7 @@ router.get("/rooms/:roomId/check-eligibility", async (req, res) => {
         { hotelId: roomId },
         { "room.name": dbRoom.name }
       ],
-      status: { $nin: ["Cancelled by User", "Cancelled by Admin"] },
-      checkOutDate: { $lte: todayStr }
+      status: { $nin: ["Cancelled by User", "Cancelled by Admin"] }
     });
 
     res.json({ eligible: !!verifiedBooking });
@@ -107,8 +104,7 @@ router.post("/rooms/:roomId/reviews", upload.single("photo"), async (req, res) =
       return res.status(404).json({ error: "Room not found" });
     }
 
-    // 1. Verify user completed stay
-    const todayStr = new Date().toISOString().split("T")[0];
+    // 1. Verify user has a valid non-cancelled booking for this room/hotel
     const verifiedBooking = await Booking.findOne({
       userId,
       $or: [
@@ -116,12 +112,11 @@ router.post("/rooms/:roomId/reviews", upload.single("photo"), async (req, res) =
         { hotelId: roomId },
         { "room.name": dbRoom.name }
       ],
-      status: { $nin: ["Cancelled by User", "Cancelled by Admin"] },
-      checkOutDate: { $lte: todayStr }
+      status: { $nin: ["Cancelled by User", "Cancelled by Admin"] }
     });
 
     if (!verifiedBooking) {
-      return res.status(403).json({ error: "Only verified guests with a completed stay can write a review." });
+      return res.status(403).json({ error: "Only guests with a valid booking can write a review for this stay." });
     }
 
     // 2. Moderation Check: Profanity and Spam Links
@@ -146,7 +141,7 @@ router.post("/rooms/:roomId/reviews", upload.single("photo"), async (req, res) =
     // 3. Save Review
     let photoUrl = "";
     if (req.file) {
-      photoUrl = `http://localhost:3000/uploads/reviews/${req.file.filename}`;
+      photoUrl = `/uploads/reviews/${req.file.filename}`;
     }
 
     const review = new Review({

@@ -74,7 +74,7 @@ const ProfilePage = () => {
     setAvatar(previewUrl); // Show local crop preview immediately
   };
 
-  const handleAddAddress = (e) => {
+  const handleAddAddress = async (e) => {
     e.preventDefault();
     if (!addrStreet.trim() || !addrCity.trim() || !addrState.trim() || !addrPincode.trim()) {
       setToast({ message: "Please fill out all address fields.", type: "error" });
@@ -92,7 +92,8 @@ const ProfilePage = () => {
       country: addrCountry
     };
 
-    setAddresses([...addresses, newAddress]);
+    const updatedAddresses = [...addresses, newAddress];
+    setAddresses(updatedAddresses);
     
     setAddrStreet("");
     setAddrCity("");
@@ -101,13 +102,29 @@ const ProfilePage = () => {
     setAddrLabel("Home");
     setShowAddressForm(false);
     
-    setToast({ message: "Address added. Click 'Save Changes' to persist.", type: "success" });
+    try {
+      if (user?._id) {
+        await axios.put(`${API_BASE_URL}/users/${user._id}`, { addresses: updatedAddresses });
+      }
+      setToast({ message: "🎉 Address saved to your profile!", type: "success" });
+    } catch (err) {
+      console.error("Address save error:", err);
+      setToast({ message: "Address added locally.", type: "success" });
+    }
     setTimeout(() => setToast(null), 4000);
   };
 
-  const handleDeleteAddress = (addressId) => {
-    setAddresses(addresses.filter((addr) => addr.id !== addressId));
-    setToast({ message: "Address removed. Click 'Save Changes' to persist.", type: "success" });
+  const handleDeleteAddress = async (addressId) => {
+    const updatedAddresses = addresses.filter((addr) => addr.id !== addressId);
+    setAddresses(updatedAddresses);
+    try {
+      if (user?._id) {
+        await axios.put(`${API_BASE_URL}/users/${user._id}`, { addresses: updatedAddresses });
+      }
+      setToast({ message: "Address removed successfully.", type: "success" });
+    } catch (err) {
+      console.error("Address remove error:", err);
+    }
     setTimeout(() => setToast(null), 4000);
   };
 

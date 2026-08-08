@@ -179,7 +179,11 @@ import {
   BsXCircleFill,
   BsClockHistory,
   BsCreditCard,
-  BsShieldCheck
+  BsShieldCheck,
+  BsStarFill,
+  BsStar,
+  BsCameraFill,
+  BsX
 } from "react-icons/bs";
 import Title from "../components/Title";
 import { usePreferences } from "../context/DarkModeContext";
@@ -193,6 +197,13 @@ const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [activeTab, setActiveTab] = useState("upcoming"); // "upcoming" | "past" | "cancelled"
+  
+  // Review Modal state
+  const [reviewModalBooking, setReviewModalBooking] = useState(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewPhoto, setReviewPhoto] = useState(null);
+  const [submittingReview, setSubmittingReview] = useState(false);
   const [cancelBookingId, setCancelBookingId] = useState(null); // ID of booking pending cancellation
   const [toast, setToast] = useState(null);
 
@@ -256,6 +267,53 @@ const MyBookings = () => {
     const city = booking.room?.city || booking.hotel?.address?.split(",")?.pop()?.trim() || "";
     navigate(`/rooms?city=${encodeURIComponent(city)}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewComment.trim()) {
+      setToast({ message: "Please enter your review experience.", type: "error" });
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      const userJson = localStorage.getItem("user");
+      if (!userJson) return;
+      const user = JSON.parse(userJson);
+
+      const roomId = reviewModalBooking.roomId || reviewModalBooking.room?._id || reviewModalBooking.hotelId;
+      
+      const formData = new FormData();
+      formData.append("userId", user._id);
+      formData.append("userName", user.name || "Guest");
+      formData.append("userAvatar", user.avatar || "");
+      formData.append("rating", reviewRating);
+      formData.append("comment", reviewComment);
+      if (reviewPhoto) {
+        formData.append("photo", reviewPhoto);
+      }
+
+      const res = await axiosInstance.post(`${API_BASE_URL}/reviews/rooms/${roomId}/reviews`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+
+      setToast({ message: "🎉 " + (res.data.message || "Review submitted successfully!"), type: "success" });
+      setTimeout(() => setToast(null), 4000);
+
+      setReviewModalBooking(null);
+      setReviewComment("");
+      setReviewPhoto(null);
+      setReviewRating(5);
+    } catch (err) {
+      console.error("Review submit error:", err);
+      const msg = err.response?.data?.error || "Failed to submit review.";
+      setToast({ message: `❌ ${msg}`, type: "error" });
+      setTimeout(() => setToast(null), 5000);
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   const getBookingDetails = (booking) => {
@@ -440,6 +498,20 @@ const MyBookings = () => {
                     </button>
                   )}
 
+                  {details.tab !== "cancelled" && (
+                    <button
+                      onClick={() => {
+                        setReviewModalBooking(booking);
+                        setReviewRating(5);
+                        setReviewComment("");
+                        setReviewPhoto(null);
+                      }}
+                      className="bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer border-none"
+                    >
+                      <BsStarFill size={11} /> Write a Review
+                    </button>
+                  )}
+
                   {details.tab === "cancelled" && (
                     <span className="text-xs text-gray-400 italic">No actions available</span>
                   )}
@@ -465,6 +537,98 @@ const MyBookings = () => {
           )}
         </div>
       </div>
+
+      {/* Write a Review Modal */}
+      {reviewModalBooking && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 shadow-xl p-6 rounded-3xl w-full max-w-lg animate-fade-in text-gray-850 dark:text-gray-200 relative">
+            <button
+              onClick={() => setReviewModalBooking(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white bg-transparent border-none cursor-pointer"
+            >
+              <BsX size={24} />
+            </button>
+
+            <h3 className="font-playfair text-xl font-bold text-gray-850 dark:text-white mb-1">
+              Rate & Review Stay
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+              Share your honest feedback for <strong className="text-teal-600 dark:text-teal-400">{reviewModalBooking.room?.name || reviewModalBooking.hotel?.name}</strong>
+            </p>
+
+            <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
+              {/* Star Rating Selector */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5 uppercase tracking-wider">
+                  Overall Rating
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      className="bg-transparent border-none cursor-pointer text-2xl transition hover:scale-110 focus:outline-none p-0"
+                    >
+                      {star <= reviewRating ? (
+                        <BsStarFill className="text-amber-400" />
+                      ) : (
+                        <BsStar className="text-gray-300 dark:text-gray-600" />
+                      )}
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-amber-500 ml-2">{reviewRating} / 5 Stars</span>
+                </div>
+              </div>
+
+              {/* Review Comment Textarea */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5 uppercase tracking-wider">
+                  Your Review
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="What did you enjoy about the room, cleanliness, amenities, or staff service?"
+                  className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-sm outline-none focus:border-teal-500 text-gray-800 dark:text-white transition"
+                />
+              </div>
+
+              {/* Optional Photo Upload Input */}
+              <div>
+                <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1.5 uppercase tracking-wider">
+                  Add Photo (Optional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(e) => setReviewPhoto(e.target.files[0] || null)}
+                  className="text-xs text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 dark:file:bg-teal-950/40 dark:file:text-teal-400 hover:file:bg-teal-100 cursor-pointer"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end border-t dark:border-gray-700 pt-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setReviewModalBooking(null)}
+                  className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-250 text-xs font-semibold px-4 py-2.5 rounded-xl border-none cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-650 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingReview}
+                  className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-5 py-2.5 rounded-xl border-none cursor-pointer transition shadow-sm disabled:opacity-50"
+                >
+                  {submittingReview ? "Submitting..." : "Post Review"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Light-themed Cancellation Policy Modal */}
       {cancelBookingId && (
