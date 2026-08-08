@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { BsStarFill, BsGeoAltFill } from "react-icons/bs";
 import { FaWifi, FaParking, FaSwimmer, FaTv, FaSnowflake, FaUtensils } from 'react-icons/fa';
 import DealBadge from "./DealBadge";
+import { API_BASE_URL } from "../config/api";
 
 const amenityIcons = {
   "WiFi": <FaWifi className="text-blue-600" />,
@@ -26,7 +27,7 @@ const Recommendations = () => {
     const fetchRecommendations = async () => {
       try {
         // Fetch all rooms
-        const roomsResponse = await fetch("http://localhost:3000/rooms");
+        const roomsResponse = await fetch(`${API_BASE_URL}/rooms`);
         if (!roomsResponse.ok) throw new Error("Failed to fetch rooms");
         const allRooms = await roomsResponse.json();
 
@@ -36,7 +37,7 @@ const Recommendations = () => {
           const user = JSON.parse(storedUser);
           
           // Fetch user's bookings
-          const bookingsResponse = await fetch(`http://localhost:3000/bookings/user/${user._id}`);
+          const bookingsResponse = await fetch(`${API_BASE_URL}/bookings/user/${user._id}`);
           if (bookingsResponse.ok) {
             const bookings = await bookingsResponse.json();
             

@@ -288,6 +288,7 @@ import Register from '../components/Register';
 import FiltersPanel from '../components/FiltersPanel';
 import DealBadge from '../components/DealBadge';
 import { usePreferences } from '../context/DarkModeContext';
+import { API_BASE_URL } from '../config/api';
 
 const amenityIcons = {
   "WiFi": <FaWifi className="text-blue-600" />,
@@ -366,7 +367,7 @@ const AllRooms = () => {
       }
       try {
         const parsed = JSON.parse(stored);
-        const res = await fetch(`http://localhost:3000/users/${parsed._id}/wishlist`);
+        const res = await fetch(`${API_BASE_URL}/users/${parsed._id}/wishlist`);
         if (res.ok) {
           const data = await res.json();
           setUserWishlist(data.map((r) => r._id));
@@ -392,14 +393,14 @@ const AllRooms = () => {
 
     try {
       if (isWishlisted) {
-        const res = await fetch(`http://localhost:3000/users/${parsed._id}/wishlist/${roomId}`, {
+        const res = await fetch(`${API_BASE_URL}/users/${parsed._id}/wishlist/${roomId}`, {
           method: "DELETE"
         });
         if (res.ok) {
           setUserWishlist((prev) => prev.filter((id) => id !== roomId));
         }
       } else {
-        const res = await fetch(`http://localhost:3000/users/${parsed._id}/wishlist/${roomId}`, {
+        const res = await fetch(`${API_BASE_URL}/users/${parsed._id}/wishlist/${roomId}`, {
           method: "POST"
         });
         if (res.ok) {
@@ -431,7 +432,7 @@ const AllRooms = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
+        const response = await fetch(`${API_BASE_URL}/rooms`);
         const data = await response.json();
 
         const filteredByCity = cityQuery

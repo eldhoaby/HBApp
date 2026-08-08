@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/api";
 
 const PreferencesContext = createContext();
 
@@ -54,7 +55,7 @@ export const PreferencesProvider = ({ children }) => {
         window.dispatchEvent(new Event("storage"));
 
         // Save preferences inside MongoDB
-        await axios.put(`http://localhost:3000/users/${parsed._id}`, updatedFields);
+        await axios.put(`${API_BASE_URL}/users/${parsed._id}`, updatedFields);
       }
     } catch (err) {
       console.error("Preferences sync error:", err);

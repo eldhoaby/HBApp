@@ -13,6 +13,7 @@ import PriceTrendChart from "../components/PriceTrendChart";
 import SimilarHotels from "../components/SimilarHotels";
 import { usePreferences } from "../context/DarkModeContext";
 import Avatar from "../components/Avatar";
+import { API_BASE_URL } from "../config/api";
 
 const amenityIcons = {
   "WiFi": <FaWifi className="text-blue-600" />, "Wi-Fi": <FaWifi className="text-blue-600" />,
@@ -57,7 +58,7 @@ const RoomDetails = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${id}`);
+        const res = await fetch(`${API_BASE_URL}/rooms/${id}`);
         if (!res.ok) throw new Error("Room not found");
         const data = await res.json();
         setRoom(data);
@@ -72,7 +73,7 @@ const RoomDetails = () => {
       if (!userJson) return;
       try {
         const user = JSON.parse(userJson);
-        const res = await fetch(`http://localhost:3000/users/${user._id}/wishlist`);
+        const res = await fetch(`${API_BASE_URL}/users/${user._id}/wishlist`);
         if (res.ok) {
           const wishlist = await res.json();
           setIsWishlisted(wishlist.some((r) => r._id === id));
@@ -84,7 +85,7 @@ const RoomDetails = () => {
 
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/reviews/rooms/${id}/reviews`);
+        const res = await fetch(`${API_BASE_URL}/reviews/rooms/${id}/reviews`);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
@@ -99,7 +100,7 @@ const RoomDetails = () => {
       if (!userJson) return;
       try {
         const user = JSON.parse(userJson);
-        const res = await fetch(`http://localhost:3000/reviews/rooms/${id}/check-eligibility?userId=${user._id}`);
+        const res = await fetch(`${API_BASE_URL}/reviews/rooms/${id}/check-eligibility?userId=${user._id}`);
         if (res.ok) {
           const data = await res.json();
           setIsEligible(data.eligible);
@@ -125,12 +126,12 @@ const RoomDetails = () => {
 
     try {
       if (isWishlisted) {
-        const res = await fetch(`http://localhost:3000/users/${user._id}/wishlist/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/users/${user._id}/wishlist/${id}`, {
           method: "DELETE"
         });
         if (res.ok) setIsWishlisted(false);
       } else {
-        const res = await fetch(`http://localhost:3000/users/${user._id}/wishlist/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/users/${user._id}/wishlist/${id}`, {
           method: "POST"
         });
         if (res.ok) setIsWishlisted(true);
@@ -162,7 +163,7 @@ const RoomDetails = () => {
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/check-availability`, {
+      const res = await fetch(`${API_BASE_URL}/rooms/check-availability`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomId: id, checkInDate: checkIn, checkOutDate: checkOut }),
@@ -226,7 +227,7 @@ const RoomDetails = () => {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings`, {
+      const res = await fetch(`${API_BASE_URL}/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),
@@ -285,7 +286,7 @@ const RoomDetails = () => {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings`, {
+      const res = await fetch(`${API_BASE_URL}/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),
@@ -326,7 +327,7 @@ const RoomDetails = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/reviews/rooms/${id}/reviews`, {
+      const res = await fetch(`${API_BASE_URL}/reviews/rooms/${id}/reviews`, {
         method: "POST",
         body: formData
       });

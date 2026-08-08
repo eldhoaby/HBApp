@@ -4,9 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BsPersonFill, BsMapFill, BsPlusLg, BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
 import AvatarUpload from "../components/AvatarUpload";
-import AddressCard from "../components/AddressCard";
-
-const API_BASE_URL = "http://localhost:3000";
+import { API_BASE_URL } from "../config/api";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);

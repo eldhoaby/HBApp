@@ -8,8 +8,7 @@ import { FaWifi, FaParking, FaSwimmer, FaTv, FaSnowflake, FaUtensils } from 'rea
 import StarRating from "../components/StarRating";
 import DealBadge from "../components/DealBadge";
 import { usePreferences } from "../context/DarkModeContext";
-
-const API_BASE_URL = "http://localhost:3000";
+import { API_BASE_URL } from "../config/api";
 
 const amenityIcons = {
   "WiFi": <FaWifi className="text-blue-600" />,

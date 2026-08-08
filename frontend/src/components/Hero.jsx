@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { API_BASE_URL } from "../config/api";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ const Hero = () => {
 
     if (targetCity && !isExactCity) {
       try {
-        const res = await fetch("http://localhost:3000/chatbot/semantic-search", {
+        const res = await fetch(`${API_BASE_URL}/chatbot/semantic-search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: targetCity })

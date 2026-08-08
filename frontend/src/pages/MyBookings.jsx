@@ -183,8 +183,7 @@ import {
 } from "react-icons/bs";
 import Title from "../components/Title";
 import { usePreferences } from "../context/DarkModeContext";
-
-const API_BASE_URL = "http://localhost:3000";
+import { API_BASE_URL } from "../config/api";
 
 const MyBookings = () => {
   const navigate = useNavigate();
@@ -207,7 +206,7 @@ const MyBookings = () => {
     try {
       const user = JSON.parse(userJson);
       const userId = user._id || user.id;
-      const res = await axios.get(`http://localhost:3000/bookings/user/${userId}`);
+      const res = await axios.get(`${API_BASE_URL}/bookings/user/${userId}`);
       setBookings(res.data);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
@@ -226,7 +225,7 @@ const MyBookings = () => {
 
   const confirmCancelBooking = async (bookingId) => {
     try {
-      const res = await axios.put(`http://localhost:3000/bookings/${bookingId}`, {
+      const res = await axios.put(`${API_BASE_URL}/bookings/${bookingId}`, {
         status: "Cancelled by User",
       });
 

@@ -18,8 +18,7 @@ import {
 } from "react-icons/bs";
 import "./ChatbotWidget.css";
 import DealBadge from "./DealBadge";
-
-const API_BASE_URL = "http://localhost:3000";
+import { API_BASE_URL } from "../config/api";
 
 // Preprogrammed HomyStay FAQ policies
 const FAQ_ANSWERS = {
