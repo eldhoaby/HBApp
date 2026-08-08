@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/api';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
@@ -29,7 +30,7 @@ const Admin = () => {
 
   const handleLogin = () => {
     axios
-      .post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/login`, credentials)
+      .post(`${API_BASE_URL}/admin/login`, credentials)
       .then((res) => {
         localStorage.setItem('user', JSON.stringify(res.data));
         localStorage.setItem('role', 'admin');

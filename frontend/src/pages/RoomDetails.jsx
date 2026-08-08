@@ -342,14 +342,14 @@ const RoomDetails = () => {
       setReviewPhoto(null);
 
       // Re-fetch reviews list
-      const revRes = await fetch(`http://localhost:3000/reviews/rooms/${id}/reviews`);
+      const revRes = await fetch(`${API_BASE_URL}/reviews/rooms/${id}/reviews`);
       if (revRes.ok) {
         const freshReviews = await revRes.json();
         setReviews(freshReviews);
       }
 
       // Re-fetch room to refresh average star rating
-      const rRes = await fetch(`http://localhost:3000/rooms/${id}`);
+      const rRes = await fetch(`${API_BASE_URL}/rooms/${id}`);
       if (rRes.ok) {
         const freshRoom = await rRes.json();
         setRoom(freshRoom);

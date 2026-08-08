@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { assets } from '../../assets/assets';
 
@@ -33,7 +34,7 @@ const EditRoom = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/rooms/${id}`);
         const room = res.data;
 
         setFormData({
@@ -94,7 +95,7 @@ const EditRoom = () => {
     };
 
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${id}`, dataToSend);
+      await axios.put(`${API_BASE_URL}/rooms/${id}`, dataToSend);
       alert("Room updated successfully!");
       navigate("/admin/list-rooms");
     } catch (error) {

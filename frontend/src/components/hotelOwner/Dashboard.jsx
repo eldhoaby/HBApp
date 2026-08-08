@@ -117,6 +117,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/api';
 
 const Dashboard = () => {
   const [metrics, setMetrics] = useState({
@@ -132,7 +133,7 @@ const Dashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/admin/metrics`);
+      const res = await axios.get(`${API_BASE_URL}/admin/metrics`);
       setMetrics(res.data);
     } catch (err) {
       console.error("❌ Error fetching metrics:", err);
@@ -144,7 +145,7 @@ const Dashboard = () => {
     if (!confirm) return;
 
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, { status: "Cancelled by Admin" });
+      await axios.put(`${API_BASE_URL}/bookings/${bookingId}`, { status: "Cancelled by Admin" });
       alert("✅ Booking cancelled successfully!");
       fetchMetrics(); // Refresh dashboard data
     } catch (error) {
@@ -158,7 +159,7 @@ const Dashboard = () => {
     if (!confirm) return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`);
+      await axios.delete(`${API_BASE_URL}/bookings/${bookingId}`);
       alert("🗑️ Booking deleted successfully!");
       fetchMetrics(); // Refresh dashboard data
     } catch (error) {

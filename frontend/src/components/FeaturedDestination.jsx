@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import HotelCard from './HotelCard';
 import Title from './Title';
 import Login from './Login';
+import { API_BASE_URL } from '../config/api';
 
 const FeaturedDestination = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const FeaturedDestination = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
+        const response = await fetch(`${API_BASE_URL}/rooms`);
         const data = await response.json();
 
         const validRooms = data.filter(

@@ -181,6 +181,7 @@
 // export default ListRooms;
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/api";
 import { useNavigate } from "react-router-dom";
 
 const ListRooms = () => {
@@ -194,7 +195,7 @@ const ListRooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`);
+      const res = await axios.get(`${API_BASE_URL}/rooms`);
       setRooms(res.data);
     } catch (err) {
       console.error("❌ Failed to fetch rooms:", err);
@@ -207,7 +208,7 @@ const ListRooms = () => {
     if (!window.confirm("Are you sure you want to delete this room?")) return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms/${roomId}`);
+      await axios.delete(`${API_BASE_URL}/rooms/${roomId}`);
       alert("✅ Room deleted!");
       fetchRooms();
     } catch (err) {

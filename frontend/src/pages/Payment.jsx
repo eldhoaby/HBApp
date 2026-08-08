@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { usePreferences } from '../context/DarkModeContext';
+import { API_BASE_URL } from '../config/api';
 
 const Payment = () => {
   const location = useLocation();
@@ -30,7 +31,7 @@ const Payment = () => {
         return;
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/razorpay/create-order`, {
+      const res = await fetch(`${API_BASE_URL}/razorpay/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: totalPrice }),
@@ -50,7 +51,7 @@ const Payment = () => {
           alert('Payment Successful! ✅');
 
           try {
-            const updateRes = await axios.put(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/bookings/${bookingId}`, {
+            const updateRes = await axios.put(`${API_BASE_URL}/bookings/${bookingId}`, {
               isPaid: true,
             });
 

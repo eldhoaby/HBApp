@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import { assets } from '../../assets/assets';
 
@@ -59,7 +60,7 @@ const HotelReg = () => {
     };
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/rooms`, dataToSend);
+      await axios.post(`${API_BASE_URL}/rooms`, dataToSend);
       alert("Hotel registered successfully!");
       navigate("/admin/dashboard");
     } catch (error) {
