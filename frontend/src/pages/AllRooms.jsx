@@ -507,11 +507,11 @@ const AllRooms = () => {
     });
 
   return (
-    <>
-      <div className="flex flex-col-reverse lg:flex-row items-start gap-8 pt-28 px-4 md:px-16 lg:px-24 xl:px-32 max-w-7xl mx-auto w-full">
+    <div className="bg-white dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <div className="flex flex-col-reverse lg:flex-row items-start gap-8 pt-28 pb-16 px-4 md:px-16 lg:px-24 xl:px-32 max-w-7xl mx-auto w-full">
         <div className="flex-1 w-full">
-          <h1 className="font-playfair text-4xl">Hotel Rooms</h1>
-          <p className="text-sm text-gray-500 mt-2 max-w-2xl">
+          <h1 className="font-playfair text-4xl text-gray-900 dark:text-white font-semibold">Hotel Rooms</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-2xl">
             Enjoy luxury and comfort. Browse and book your ideal stay.
           </p>
 
