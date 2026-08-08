@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { BsCameraFill, BsX } from "react-icons/bs";
+import { getAvatarUrl } from "../config/api";
 
 const AvatarUpload = ({ currentAvatar, onSave, userName }) => {
   const [previewFile, setPreviewFile] = useState(null);
@@ -96,7 +97,7 @@ const AvatarUpload = ({ currentAvatar, onSave, userName }) => {
       >
         {currentAvatar ? (
           <img 
-            src={currentAvatar} 
+            src={getAvatarUrl(currentAvatar)} 
             alt="User avatar" 
             className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
           />

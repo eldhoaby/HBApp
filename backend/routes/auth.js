@@ -57,7 +57,7 @@ router.post("/upload-avatar", (req, res) => {
       return res.status(400).json({ message: "No file was uploaded." });
     }
 
-    const fileUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    const fileUrl = `/uploads/${req.file.filename}`;
     res.status(200).json({ success: true, url: fileUrl });
   });
 });

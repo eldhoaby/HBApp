@@ -27,9 +27,9 @@ const HotelCard = ({ room, index, onBookNow }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white rounded-xl shadow-md cursor-pointer hover:shadow-lg transition w-full max-w-xs"
+      className="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700/50 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition w-full max-w-xs"
     >
-      <div className="relative h-48 rounded-t-xl overflow-hidden">
+      <div className="relative h-48 rounded-t-xl overflow-hidden bg-gray-100 dark:bg-gray-700">
         <img
           src={images[0]}
           alt={name}
@@ -43,16 +43,16 @@ const HotelCard = ({ room, index, onBookNow }) => {
       </div>
 
       <div className="p-4">
-        <h3 className="text-lg font-semibold truncate">{name}</h3>
-        <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-          <FaMapMarkerAlt className="text-gray-400" />
+        <h3 className="text-lg font-semibold truncate text-gray-900 dark:text-white">{name}</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+          <FaMapMarkerAlt className="text-gray-400 dark:text-gray-500" />
           {address}
         </p>
 
         <div className="flex items-center justify-between mt-3">
-          <p className="text-sm font-bold text-black">
+          <p className="text-sm font-bold text-gray-900 dark:text-white">
             ₹{price ?? pricePerNight ?? 'N/A'}
-            <span className="text-sm font-normal text-gray-500">/night</span>
+            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">/night</span>
           </p>
           <p className="text-sm flex items-center gap-1 text-orange-500">
             <FaStar /> {rating}

@@ -1,6 +1,5 @@
-// frontend/src/components/Avatar.jsx
-
 import React from "react";
+import { getAvatarUrl } from "../config/api";
 
 // Deterministic hashing helper to get a consistent color index
 const getHashColor = (seedString = "") => {
@@ -38,7 +37,7 @@ const Avatar = ({ name = "", userId = "", imageUrl = "", size = "w-10 h-10 text-
     return (
       <div className={`${size} rounded-full overflow-hidden border border-gray-100 dark:border-gray-700/80 shadow-sm shrink-0`}>
         <img
-          src={imageUrl}
+          src={getAvatarUrl(imageUrl)}
           alt={cleanName}
           className="w-full h-full object-cover"
           onError={(e) => {

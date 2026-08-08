@@ -102,11 +102,11 @@ const Recommendations = () => {
   if (loading || rooms.length === 0) return null;
 
   return (
-    <div className="py-12 bg-gray-50/50 px-4 md:px-16 lg:px-24 xl:px-32 border-b border-gray-100">
+    <div className="py-12 bg-gray-50/50 dark:bg-gray-900/40 px-4 md:px-16 lg:px-24 xl:px-32 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h2 className="font-playfair text-3xl text-gray-800 font-semibold">{title}</h2>
-          <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
+          <h2 className="font-playfair text-3xl text-gray-800 dark:text-white font-semibold">{title}</h2>
+          <p className="text-sm text-gray-400 dark:text-gray-400 mt-1">{subtitle}</p>
         </div>
 
         {/* 3 Grid Room Cards */}
@@ -115,10 +115,10 @@ const Recommendations = () => {
             <div
               key={room._id}
               onClick={() => handleCardClick(room._id)}
-              className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer flex flex-col h-full"
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer flex flex-col h-full"
             >
               {/* Image Header */}
-              <div className="relative h-56 w-full bg-gray-100 overflow-hidden">
+              <div className="relative h-56 w-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
                 <img
                   src={room.images?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500"}
                   alt={room.name}
@@ -127,8 +127,8 @@ const Recommendations = () => {
                     e.target.src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500";
                   }}
                 />
-                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-teal-800 flex items-center gap-1 shadow-sm">
-                  <BsGeoAltFill className="text-teal-600 text-[10px]" />
+                <div className="absolute top-4 left-4 bg-white/95 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-teal-800 dark:text-teal-300 flex items-center gap-1 shadow-sm">
+                  <BsGeoAltFill className="text-teal-600 dark:text-teal-400 text-[10px]" />
                   {room.city}
                 </div>
               </div>
@@ -137,7 +137,7 @@ const Recommendations = () => {
               <div className="p-6 flex flex-col flex-1 justify-between gap-4">
                 <div>
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-playfair text-xl text-gray-800 line-clamp-1 font-semibold flex-1">
+                    <h3 className="font-playfair text-xl text-gray-800 dark:text-white line-clamp-1 font-semibold flex-1">
                       {room.name}
                     </h3>
                     <div className="flex items-center gap-1 text-amber-500 font-medium text-sm ml-2">
@@ -145,7 +145,7 @@ const Recommendations = () => {
                       {room.rating || "4.5"}
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 font-light mb-3">{room.roomType}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-light mb-3">{room.roomType}</p>
 
                   {/* Amenity tags */}
                   <div className="flex flex-wrap gap-1.5">
