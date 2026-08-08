@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BsPersonFill, BsMapFill, BsPlusLg, BsCheckCircleFill, BsXCircleFill } from "react-icons/bs";
 import AvatarUpload from "../components/AvatarUpload";
+import AddressCard from "../components/AddressCard";
 import { API_BASE_URL } from "../config/api";
 
 const ProfilePage = () => {
