@@ -15,6 +15,7 @@
 [![Razorpay](https://img.shields.io/badge/Razorpay-Integrated-3395FF?style=flat-square&logo=razorpay&logoColor=white)](https://razorpay.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/eldhoaby/HBApp/ci.yml?style=flat-square&label=CI)](https://github.com/eldhoaby/HBApp/actions)
+[![Deployment: Ready](https://img.shields.io/badge/Vercel-Deployment_Active-000000?style=flat-square&logo=vercel&logoColor=white)](https://hb-app-eldho.vercel.app)
 
 **A production-grade, full-stack MERN hotel reservation platform with role-based access control, real-time availability tracking, and integrated payment processing.**
 
