@@ -41,31 +41,25 @@ const ProfilePage = () => {
     
     try {
       const parsed = JSON.parse(stored);
-      setUser(parsed);
+      const res = await axios.get(`${API_BASE_URL}/users/${parsed._id}`);
+      const userData = res.data;
+      
+      setUser(userData);
+      setName(userData.name || "");
+      setEmail(userData.email || "");
+      setPhoneNumber(userData.phoneNumber || "");
+      setDob(userData.dob || "");
+      setGender(userData.gender || "");
+      setAvatar(userData.avatar || "");
+      setAddresses(userData.addresses || []);
+    } catch (err) {
+      console.error("Failed to load profile data:", err);
+      setToast({ message: "Failed to connect to database server. Showing offline details.", type: "error" });
+      setTimeout(() => setToast(null), 5000);
+      
+      const parsed = JSON.parse(stored);
       setName(parsed.name || "");
       setEmail(parsed.email || "");
-      setPhoneNumber(parsed.phoneNumber || "");
-      setDob(parsed.dob || "");
-      setGender(parsed.gender || "");
-      setAvatar(parsed.avatar || "");
-      setAddresses(parsed.addresses || []);
-
-      if (parsed._id) {
-        const res = await axios.get(`${API_BASE_URL}/users/${parsed._id}`);
-        const userData = res.data;
-        if (userData) {
-          setUser(userData);
-          setName(userData.name || "");
-          setEmail(userData.email || "");
-          setPhoneNumber(userData.phoneNumber || "");
-          setDob(userData.dob || "");
-          setGender(userData.gender || "");
-          setAvatar(userData.avatar || "");
-          setAddresses(userData.addresses || []);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to load fresh profile data from DB:", err);
     } finally {
       setLoading(false);
     }
@@ -80,7 +74,7 @@ const ProfilePage = () => {
     setAvatar(previewUrl); // Show local crop preview immediately
   };
 
-  const handleAddAddress = async (e) => {
+  const handleAddAddress = (e) => {
     e.preventDefault();
     if (!addrStreet.trim() || !addrCity.trim() || !addrState.trim() || !addrPincode.trim()) {
       setToast({ message: "Please fill out all address fields.", type: "error" });
@@ -98,8 +92,7 @@ const ProfilePage = () => {
       country: addrCountry
     };
 
-    const updatedAddresses = [...addresses, newAddress];
-    setAddresses(updatedAddresses);
+    setAddresses([...addresses, newAddress]);
     
     setAddrStreet("");
     setAddrCity("");
@@ -108,29 +101,13 @@ const ProfilePage = () => {
     setAddrLabel("Home");
     setShowAddressForm(false);
     
-    try {
-      if (user?._id) {
-        await axios.put(`${API_BASE_URL}/users/${user._id}`, { addresses: updatedAddresses });
-      }
-      setToast({ message: "🎉 Address saved to your profile!", type: "success" });
-    } catch (err) {
-      console.error("Address save error:", err);
-      setToast({ message: "Address added locally.", type: "success" });
-    }
+    setToast({ message: "Address added. Click 'Save Changes' to persist.", type: "success" });
     setTimeout(() => setToast(null), 4000);
   };
 
-  const handleDeleteAddress = async (addressId) => {
-    const updatedAddresses = addresses.filter((addr) => addr.id !== addressId);
-    setAddresses(updatedAddresses);
-    try {
-      if (user?._id) {
-        await axios.put(`${API_BASE_URL}/users/${user._id}`, { addresses: updatedAddresses });
-      }
-      setToast({ message: "Address removed successfully.", type: "success" });
-    } catch (err) {
-      console.error("Address remove error:", err);
-    }
+  const handleDeleteAddress = (addressId) => {
+    setAddresses(addresses.filter((addr) => addr.id !== addressId));
+    setToast({ message: "Address removed. Click 'Save Changes' to persist.", type: "success" });
     setTimeout(() => setToast(null), 4000);
   };
 
