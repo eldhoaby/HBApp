@@ -41,25 +41,31 @@ const ProfilePage = () => {
     
     try {
       const parsed = JSON.parse(stored);
-      const res = await axios.get(`${API_BASE_URL}/users/${parsed._id}`);
-      const userData = res.data;
-      
-      setUser(userData);
-      setName(userData.name || "");
-      setEmail(userData.email || "");
-      setPhoneNumber(userData.phoneNumber || "");
-      setDob(userData.dob || "");
-      setGender(userData.gender || "");
-      setAvatar(userData.avatar || "");
-      setAddresses(userData.addresses || []);
-    } catch (err) {
-      console.error("Failed to load profile data:", err);
-      setToast({ message: "Failed to connect to database server. Showing offline details.", type: "error" });
-      setTimeout(() => setToast(null), 5000);
-      
-      const parsed = JSON.parse(stored);
+      setUser(parsed);
       setName(parsed.name || "");
       setEmail(parsed.email || "");
+      setPhoneNumber(parsed.phoneNumber || "");
+      setDob(parsed.dob || "");
+      setGender(parsed.gender || "");
+      setAvatar(parsed.avatar || "");
+      setAddresses(parsed.addresses || []);
+
+      if (parsed._id) {
+        const res = await axios.get(`${API_BASE_URL}/users/${parsed._id}`);
+        const userData = res.data;
+        if (userData) {
+          setUser(userData);
+          setName(userData.name || "");
+          setEmail(userData.email || "");
+          setPhoneNumber(userData.phoneNumber || "");
+          setDob(userData.dob || "");
+          setGender(userData.gender || "");
+          setAvatar(userData.avatar || "");
+          setAddresses(userData.addresses || []);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load fresh profile data from DB:", err);
     } finally {
       setLoading(false);
     }
@@ -193,8 +199,15 @@ const ProfilePage = () => {
 
   if (!user) {
     return (
-      <div className="pt-32 pb-16 text-center bg-white dark:bg-gray-900 min-h-[60vh]">
-        <p className="text-gray-500 dark:text-gray-400">Please log in to view your profile settings.</p>
+      <div className="pt-32 pb-16 flex flex-col items-center justify-center text-center bg-white dark:bg-gray-900 min-h-[60vh] px-4">
+        <h2 className="font-playfair text-2xl font-semibold text-gray-800 dark:text-white mb-2">Access Your Profile</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-md">Please sign in to view and update your personal profile details, picture, and saved addresses.</p>
+        <button 
+          onClick={() => window.location.href = "/login"}
+          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm px-6 py-2.5 rounded-full transition shadow cursor-pointer border-none"
+        >
+          Sign In Now
+        </button>
       </div>
     );
   }
