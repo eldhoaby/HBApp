@@ -41,7 +41,6 @@ const NavBar = () => {
     const storedRole = localStorage.getItem("role");
     const storedUser = localStorage.getItem("user");
 
-    setRole(storedRole || "");
     setFirstLetter("");
     setCurrentUser(null);
 
@@ -50,9 +49,13 @@ const NavBar = () => {
         const parsed = JSON.parse(storedUser);
         setCurrentUser(parsed);
         setFirstLetter(parsed.name?.[0]?.toUpperCase() || "");
+        setRole(storedRole || parsed.role || "user");
       } catch (err) {
         console.error("Error parsing stored user", err);
+        setRole(storedRole || "");
       }
+    } else {
+      setRole(storedRole || "");
     }
   };
 
