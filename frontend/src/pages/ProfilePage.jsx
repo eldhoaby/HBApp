@@ -41,25 +41,31 @@ const ProfilePage = () => {
     
     try {
       const parsed = JSON.parse(stored);
-      const res = await axios.get(`${API_BASE_URL}/users/${parsed._id}`);
-      const userData = res.data;
-      
-      setUser(userData);
-      setName(userData.name || "");
-      setEmail(userData.email || "");
-      setPhoneNumber(userData.phoneNumber || "");
-      setDob(userData.dob || "");
-      setGender(userData.gender || "");
-      setAvatar(userData.avatar || "");
-      setAddresses(userData.addresses || []);
-    } catch (err) {
-      console.error("Failed to load profile data:", err);
-      setToast({ message: "Failed to connect to database server. Showing offline details.", type: "error" });
-      setTimeout(() => setToast(null), 5000);
-      
-      const parsed = JSON.parse(stored);
+      setUser(parsed);
       setName(parsed.name || "");
       setEmail(parsed.email || "");
+      setPhoneNumber(parsed.phoneNumber || "");
+      setDob(parsed.dob || "");
+      setGender(parsed.gender || "");
+      setAvatar(parsed.avatar || "");
+      setAddresses(parsed.addresses || []);
+
+      if (parsed._id) {
+        const res = await axios.get(`${API_BASE_URL}/users/${parsed._id}`);
+        const userData = res.data;
+        if (userData) {
+          setUser(userData);
+          setName(userData.name || "");
+          setEmail(userData.email || "");
+          setPhoneNumber(userData.phoneNumber || "");
+          setDob(userData.dob || "");
+          setGender(userData.gender || "");
+          setAvatar(userData.avatar || "");
+          setAddresses(userData.addresses || []);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load fresh profile data from DB:", err);
     } finally {
       setLoading(false);
     }
