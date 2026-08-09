@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
+import heroBg from "../assets/16.png";
 import { API_BASE_URL } from "../config/api";
 
 const Hero = () => {
@@ -141,7 +142,10 @@ const Hero = () => {
   };
 
   return (
-    <div className="flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32 text-white bg-[url('/src/assets/16.png')] bg-no-repeat bg-cover bg-center h-screen">
+    <div 
+      className="flex flex-col items-start justify-center px-6 md:px-16 lg:px-24 xl:px-32 text-white bg-no-repeat bg-cover bg-center h-screen"
+      style={{ backgroundImage: `url(${heroBg})` }}
+    >
       <p className="bg-[#4989FF]/60 px-3.5 py-1 rounded-full mt-20">The Ultimate Hotel Experience</p>
       <h1 className="font-playfair text-2xl md:text-5xl font-bold max-w-xl mt-4">Step into the journey of your dreams</h1>
       <p className="max-w-130 mt-2 text-sm md:text-base text-white">
